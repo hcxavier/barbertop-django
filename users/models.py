@@ -1,28 +1,23 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-class Customer(AbstractUser):    
-    # Campos customizados do seu schema
-    phone = models.CharField(
+class CustomUser(AbstractUser):
+    # Definindo os papéis
+    class Role(models.TextChoices):
+        CLIENT = "CLIENT", "Cliente"
+        OWNER = "OWNER", "Dono de Barbearia"
+
+    role = models.CharField(
         max_length=20, 
-        blank=True, 
-        null=True, 
-        verbose_name="Telefone"
+        choices=Role.choices, 
+        default=Role.CLIENT,
+        verbose_name="Tipo de Conta"
     )
     
-    cpf = models.CharField(
-        max_length=11, 
-        unique=True, 
-        blank=True, 
-        null=True, # Permitir NULL/BLANK para flexibilidade na criação inicial
-        verbose_name="CPF"
-    )
-
-    # O campo 'updatedAt' do seu schema
-    updatedAt = models.DateTimeField(
-        auto_now=True,
-        verbose_name="Data de Atualização"
-    )
+    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Telefone")
+    cpf = models.CharField(max_length=11, unique=True, blank=True, null=True, verbose_name="CPF")
+    
+    updatedAt = models.DateTimeField(auto_now=True, verbose_name="Data de Atualização")
 
     def __str__(self):
-        return self.username
+        return f"{self.username} ({self.get_role_display()})"

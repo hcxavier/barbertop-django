@@ -8,12 +8,24 @@ class Address(models.Model):
     state = models.CharField(max_length=255)
     street = models.CharField(max_length=255)
 
+    class Meta:
+        verbose_name = "Endereço"
+        verbose_name_plural = "Endereços"
+
     def __str__(self):
         return f"{self.street}, {self.number} - {self.city}"
 
 class Barbershop(models.Model):
+    owner = models.OneToOneField(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='barbershop_profile' # Permite acessar via user.barbershop_profile
+    )
+
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+
+    # endereço vinculado a uma barbearia
     address = models.OneToOneField(Address, on_delete=models.SET_NULL, null=True, blank=True)
     imageUrl = models.TextField(blank=True, null=True)
     createdAt = models.DateTimeField(auto_now_add=True)
@@ -24,23 +36,24 @@ class Barbershop(models.Model):
 
 class Operation(models.Model):
     barbershop = models.ForeignKey(Barbershop, on_delete=models.CASCADE, related_name="operations")
-    weekDay = models.SmallIntegerField()
+    weekDay = models.SmallIntegerField(help_text="0=Segunda, 6=Domingo")
     timeInitial = models.TimeField()
     timeFinal = models.TimeField()
 
     class Meta:
         unique_together = ('barbershop', 'weekDay')
+        verbose_name = "Horário de Funcionamento"
 
     def __str__(self):
         return f"{self.barbershop.name} - Dia {self.weekDay}"
 
 class Employee(models.Model):
     barbershop = models.ForeignKey(Barbershop, on_delete=models.CASCADE, related_name="employees")
-    username = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     urlProfilePhoto = models.URLField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.username
+        return self.name
 
 class BarbershopService(models.Model):
     name = models.CharField(max_length=255)
