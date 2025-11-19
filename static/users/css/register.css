@@ -1,0 +1,71 @@
+body {
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Estilo do Logo */
+.brand-logo {
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 1.2rem;
+}
+
+/* Customização dos Cards */
+.card-custom {
+    background-color: #1a1a1a; /* Cinza muito escuro, mas não preto */
+    border: 1px solid #333;
+    border-radius: 16px; /* Bordas bem arredondadas */
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.card-custom:hover {
+    border-color: #4c1d95; /* Leve roxo na borda ao passar o mouse */
+}
+
+/* Círculo dos ícones */
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    background-color: #2e1065; /* Roxo bem escuro para o fundo */
+    color: #a855f7; /* Roxo claro para o ícone */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1.5rem auto;
+}
+
+/* Títulos e Textos */
+.text-muted-custom {
+    color: #a1a1aa; /* Cinza claro para descrições */
+}
+
+/* Botão Roxo Personalizado */
+.btn-purple {
+    background-color: #a855f7; /* Cor aproximada da imagem */
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.btn-purple:hover {
+    background-color: #9333ea; /* Um pouco mais escuro no hover */
+    color: white;
+}
+
+/* Link de Login no rodapé */
+.login-link {
+    color: #a855f7;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+    color: #c084fc;
+}
