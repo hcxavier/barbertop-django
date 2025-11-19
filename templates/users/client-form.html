@@ -1,0 +1,105 @@
+{% extends "base.html" %} {% load static %} {% block title %}FSW Barber - Cadastro Cliente{% endblock %} 
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'users/css/form-user.css' %}" />
+</head>
+
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="mw-600" style="max-width: 500px; margin: 0 auto">
+                <div class="text-center brand-logo mb-4">
+                    <div class="d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-scissors" style="color: #a855f7; font-size: 1.5rem"></i>
+                        <span class="fw-bold" style="font-size: 1.2rem">FSW BARBER</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <a href="#" class="btn-back text-decoration-none text-muted">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                </div>
+
+                <div class="card-form w-100 p-4 shadow-sm rounded" style="background: #1a1b1e; border: 1px solid #333">
+                    <h3 class="fw-bold mb-2 text-white">Criar Conta - Cliente</h3>
+                    <p class="text-muted mb-4">Preencha seus dados para começar</p>
+
+                    <form method="POST">
+                        {% csrf_token %} {% if client_form.non_field_errors %}
+                        <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <div>{% for error in client_form.non_field_errors %} {{ error }} {% endfor %}</div>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ client_form.username.id_for_label }}" class="form-label text-secondary"
+                                >Nome de Usuário</label
+                            >
+                            {{ client_form.username }} {% if client_form.username.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in client_form.username.errors %} {{ error }} {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ client_form.email.id_for_label }}" class="form-label text-secondary"
+                                >E-mail</label
+                            >
+                            {{ client_form.email }} {% if client_form.email.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in client_form.email.errors %} {{ error }} {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ client_form.phone.id_for_label }}" class="form-label text-secondary"
+                                >Telefone/WhatsApp</label
+                            >
+                            {{ client_form.phone }} {% if client_form.phone.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in client_form.phone.errors %} {{ error }} {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ client_form.password1.id_for_label }}" class="form-label text-secondary"
+                                >Senha</label
+                            >
+                            {{ client_form.password1 }} {% if client_form.password1.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in client_form.password1.errors %} {{ error }} {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ client_form.password2.id_for_label }}" class="form-label text-secondary"
+                                >Confirmar Senha</label
+                            >
+                            {{ client_form.password2 }} {% if client_form.password2.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in client_form.password2.errors %} {{ error }} {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn w-100 fw-bold"
+                            style="background-color: #a855f7; color: white; padding: 10px"
+                        >
+                            Criar Conta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
