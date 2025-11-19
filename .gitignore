@@ -1,1 +1,14 @@
 .env
+/barber
+
+barbertop/__pycache__/
+
+barbershops/__pycache__/
+barbershops/migrations/__pycache__
+
+bookings/__pycache__/
+bookings/migrations/__pycache__
+
+users/__pycache__/
+users/migrations/__pycache__
+
