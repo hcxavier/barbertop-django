@@ -13,7 +13,7 @@ body {
 }
 
 .mw-600 {
-    max-width: 600px;
+    max-width: 700px;
 }
 
 /* --- Card do Formulário --- */
@@ -81,4 +81,19 @@ body {
 .btn-purple:hover {
     background-color: #9333ea;
     color: white;
+}
+
+.text-muted-custom {
+    color: #a1a1aa; /* Cinza claro para descrições */
+}
+
+.login-link {
+    color: #a855f7;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+    color: #c084fc;
 }

@@ -36,6 +36,12 @@ class ClientSignUpForm(UserCreationForm):
             'placeholder': '(11) 99999-9999'
         })
 
+        # cpf
+        self.fields['cpf'].widget.attrs.update({
+            'class': 'form-control form-control-dark',
+            'placeholder': '000.000.000-00'
+        })
+
         # Senhas
         self.fields['password1'].widget.attrs.update({
             'class': 'form-control form-control-dark',
