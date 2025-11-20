@@ -1,15 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
+from django.shortcuts import render
 
-# Home temporária só para não dar erro 404 no redirecionamento
 def home_view(request):
-    return HttpResponse("<h1>Página Inicial - Cadastro Sucesso!</h1>")
+    return render(request, 'pages/home.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),
     path('', home_view, name='home'),
+    path('users/', include('users.urls')),
     path('barbershops/', include('barbershops.urls')),
     path('bookings/', include('bookings.urls'))
 ]

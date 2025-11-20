@@ -1,0 +1,125 @@
+{% extends "base.html" %} {% load static %} {% block title %}FSW Barber - Home{% endblock %} {% block extra_head %}
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}" />
+{% endblock %} {% block content %}
+<div class="container">
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <h4 class="text-white mb-1">Olá, <span class="fw-bold">Miguel!</span></h4>
+                <p class="text-muted small">Sexta, 2 de Fevereiro</p>
+            </div>
+
+            <div class="mb-4">
+                <form class="d-flex">
+                    <input type="text" class="form-control form-control-search" placeholder="Buscar" />
+                    <button class="btn btn-search"><i class="bi bi-search"></i></button>
+                </form>
+            </div>
+
+            <div class="mb-4 d-lg-none">
+                <img
+                    src="{% static 'home/images/banner-home.png' %}"
+                    class="w-100"
+                    style="border-radius: 16px; object-fit: cover; display: block"
+                    alt="Banner Promocional"
+                />
+            </div>
+
+            <div class="mb-4">
+                <h6 class="text-uppercase text-muted small fw-bold mb-3">Agendamentos</h6>
+
+                <div class="booking-card d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge-confirmed">Confirmado</span>
+                        <h5 class="fw-bold mb-2">Corte de Cabelo</h5>
+                        <div class="d-flex align-items-center gap-2">
+                            <img
+                                src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=100"
+                                class="barber-avatar-sm"
+                                alt="Avatar"
+                            />
+                            <span class="text-muted small">Vintage Barber</span>
+                        </div>
+                    </div>
+                    <div style="width: 1px; height: 50px; background-color: #333; margin: 0 15px"></div>
+                    <div class="date-box">
+                        <div class="date-month">Fevereiro</div>
+                        <div class="date-day">06</div>
+                        <div class="date-time">09:45</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <h6 class="text-uppercase text-muted small fw-bold mb-3">Recomendados</h6>
+
+                <div class="scrolling-wrapper">
+                    {% for i in "123" %}
+                    <div class="card card-barber">
+                        <div class="position-relative">
+                            <img
+                                src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400"
+                                class="card-img-top"
+                                alt="Barber"
+                            />
+                            <div class="rating-badge"><i class="bi bi-star-fill"></i> 5,0</div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="barber-name">Vintage Barber</h5>
+                            <p class="barber-address">Av. São Sebastião, 357, SP</p>
+                            <button class="btn btn-reservar">Reservar</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-2 mb-4">
+        <h5 class="fw-bold mb-3">Populares</h5>
+        <div class="scrolling-wrapper">
+            {% for i in "12345" %}
+            <div class="card card-barber">
+                <div class="position-relative">
+                    <img
+                        src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400"
+                        class="card-img-top"
+                        alt="Barber"
+                    />
+                    <div class="rating-badge"><i class="bi bi-star-fill"></i> 4,8</div>
+                </div>
+                <div class="card-body">
+                    <h5 class="barber-name">Los Barberos</h5>
+                    <p class="barber-address">Rua Sete de Setembro, SP</p>
+                    <button class="btn btn-reservar">Reservar</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <h5 class="fw-bold mb-3">Mais Visitados</h5>
+        <div class="scrolling-wrapper">
+            {% for i in "12345" %}
+            <div class="card card-barber">
+                <div class="position-relative">
+                    <img
+                        src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400"
+                        class="card-img-top"
+                        alt="Barber"
+                    />
+                    <div class="rating-badge"><i class="bi bi-star-fill"></i> 4,9</div>
+                </div>
+                <div class="card-body">
+                    <h5 class="barber-name">Homem Elegante</h5>
+                    <p class="barber-address">Rua Projetada, 529, SP</p>
+                    <button class="btn btn-reservar">Reservar</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

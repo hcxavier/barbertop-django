@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
 from .forms import ClientSignUpForm, BarbershopSignUpForm
 from django.contrib.auth import login
-from django.db import transaction
-from .models import CustomUser
 from django.http import JsonResponse
-from barbershops.models import Barbershop, Address, BarbershopService, Employee
-import json
 from django.views.decorators.http import require_POST
+from django.shortcuts import redirect
+from django.contrib.auth import logout
+
+def logout_view(request):
+    logout(request)
+    return redirect('users:login')
+
+def login_view(request):
+    return render(request, 'users/login.html')
 
 def register(request):            
     return render(request, 'pages/registration.html')

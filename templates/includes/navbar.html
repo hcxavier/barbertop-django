@@ -1,0 +1,65 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg fixed-top" style="background-color: #000000; border-bottom: 1px solid #1a1a1a">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <i class="bi bi-scissors" style="color: #a855f7; font-size: 1.5rem"></i>
+            <span class="fw-bold text-white">FSW BARBER</span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="bi bi-list text-white fs-2"></i>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <div class="d-flex align-items-center gap-4 flex-column flex-lg-row mt-3 mt-lg-0">
+                <a href="#" class="text-white text-decoration-none fw-medium d-flex align-items-center gap-2">
+                    <i class="bi bi-calendar4"></i> Agendamentos
+                </a>
+
+                {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <a
+                        href="#"
+                        class="btn btn-sm fw-bold d-flex align-items-center gap-2"
+                        id="userDropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        style="background-color: #a855f7; color: white; padding: 8px 20px; border-radius: 8px"
+                    >
+                        <i class="bi bi-person"></i> {{ user.first_name|default:user.username }}
+                    </a>
+
+                    <ul
+                        class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow"
+                        aria-labelledby="userDropdown"
+                        style="background-color: #1a1a1a; border-color: #333"
+                    >
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                                <i class="bi bi-person"></i> Meu Perfil
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider" style="border-color: #333" /></li>
+                        <li>
+                            <a
+                                class="dropdown-item d-flex align-items-center gap-2 text-danger"
+                                href="{% url 'users:logout' %}"
+                            >
+                                <i class="bi bi-box-arrow-right"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {% else %}
+                <a
+                    href="{% url 'users:login' %}"
+                    class="btn btn-sm fw-bold d-flex align-items-center gap-2"
+                    style="background-color: #a855f7; color: white; padding: 8px 20px; border-radius: 8px"
+                >
+                    <i class="bi bi-person"></i> Entrar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
