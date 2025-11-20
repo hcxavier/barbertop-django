@@ -55,21 +55,34 @@
                 <h6 class="text-uppercase text-muted small fw-bold mb-3">Recomendados</h6>
 
                 <div class="scrolling-wrapper">
-                    {% for i in "123" %}
+                    {% for barber in barbershops %}
                     <div class="card card-barber">
-                        <div class="position-relative">
-                            <img
-                                src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400"
-                                class="card-img-top"
-                                alt="Barber"
-                            />
-                            <div class="rating-badge"><i class="bi bi-star-fill"></i> 5,0</div>
-                        </div>
+                        {% if barber.imageUrl %}
+                            <div class="position-relative">
+                                <img
+                                    src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400"
+                                    class="card-img-top"
+                                    alt="Barber"
+                                />
+                                <div class="rating-badge"><i class="bi bi-star-fill"></i> 5,0</div>
+                            </div>
+                        {% else %}
+                            <div class="position-relative">
+                                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-shop fs-1 text-white-50"></i>
+                                    <div class="rating-badge"><i class="bi bi-star-fill"></i> 5,0</div>
+                                </div>
+                            </div>
+                        {% endif %}
                         <div class="card-body">
-                            <h5 class="barber-name">Vintage Barber</h5>
-                            <p class="barber-address">Av. São Sebastião, 357, SP</p>
+                            <h5 class="barber-name">{{ barber.name }}</h5>
+                            <p class="barber-address">{{ barber.address }}</p>
                             <button class="btn btn-reservar">Reservar</button>
                         </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">Nenhuma barbearia cadastrada ainda.</p>
                     </div>
                     {% endfor %}
                 </div>
