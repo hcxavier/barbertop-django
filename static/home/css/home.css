@@ -38,12 +38,11 @@
     color: #fff;
 }
 
-/* --- Card Styles --- */
 .card-barber {
     background-color: #1a1a1a;
     border: 1px solid #333;
     border-radius: 12px;
-    min-width: 280px; /* Largura fixa para o scroll funcionar */
+    min-width: 280px;
     max-width: 280px;
     margin-right: 16px;
     transition: transform 0.2s;
@@ -64,7 +63,7 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: rgba(46, 16, 101, 0.9); /* Roxo escuro transparente */
+    background-color: rgba(46, 16, 101, 0.9);
     color: #a855f7;
     padding: 4px 10px;
     border-radius: 20px;

@@ -1,9 +1,18 @@
-{% extends "base.html" %} {% load static %} {% block title %}FSW Barber - Cadastro Completo{% endblock %} 
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block title %}FSW Barber - Cadastro Completo{% endblock %} 
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'users/css/form-barber.css' %}" />
+{% endblock %}
+
 
 {% block content %}
-<head>
-    <link rel="stylesheet" href="{% static 'users/css/form-barber.css' %}" />
-</head>
 <body>
     <div class="container py-5">
         <div class="row justify-content-center">

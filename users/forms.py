@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
 from .models import CustomUser
 from barbershops.models import Barbershop, Address, BarbershopService, Employee
+from django.contrib.auth.forms import AuthenticationForm
 
 class ClientSignUpForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
@@ -180,3 +181,16 @@ class BarbershopSignUpForm(UserCreationForm):
                 print(f"Erro ao salvar equipe: {e}")
 
         return user
+    
+class CustomLoginForm(AuthenticationForm):
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control form-control-dark',
+        'placeholder': 'seu@email.com',
+        'id': 'email'
+    }))
+    
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'class': 'form-control form-control-dark',
+        'placeholder': '******',
+        'id': 'password'
+    }))

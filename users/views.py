@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import ClientSignUpForm, BarbershopSignUpForm
+from .forms import ClientSignUpForm, BarbershopSignUpForm,CustomLoginForm
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -11,7 +11,20 @@ def logout_view(request):
     return redirect('users:login')
 
 def login_view(request):
-    return render(request, 'users/login.html')
+    if request.user.is_authenticated:
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = CustomLoginForm(request, data=request.POST)
+
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+
+            return redirect('home')
+    else:
+        form = CustomLoginForm()
+    return render(request, 'users/login.html', {'form': form})
 
 def register(request):            
     return render(request, 'pages/registration.html')

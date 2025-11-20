@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}FSW Barber - Login{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block content %}
+<style>
+    /* --- Estilos Específicos do Login --- */
+    .login-card {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 16px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Inputs Dark */
+    .form-control-dark {
+        background-color: #27272a;
+        border: 1px solid #3f3f46;
+        color: #e5e5e5;
+        padding: 12px 16px;
+        border-radius: 8px;
+    }
+    .form-control-dark:focus {
+        background-color: #27272a;
+        border-color: #a855f7;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
+    }
+    .form-control-dark::placeholder { color: #71717a; }
+
+    /* Botão Principal */
+    .btn-purple {
+        background-color: #a855f7;
+        color: white;
+        font-weight: 600;
+        padding: 12px;
+        border-radius: 8px;
+        border: none;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    .btn-purple:hover { background-color: #9333ea; color: white; }
+
+    /* Links */
+    .link-purple {
+        color: #a855f7;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .link-purple:hover { color: #c084fc; text-decoration: underline; }
+    
+    .hover-white:hover { color: #fff !important; }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+
+    <div class="login-card">
+        <div class="text-center mb-5">
+            <div class="d-inline-flex align-items-center gap-2 fs-4 fw-bold mb-4">
+                <i class="bi bi-scissors" style="color: #a855f7;"></i>
+                <span>FSW BARBER</span>
+            </div>
+            <h5 class="fw-bold text-white">Boas-vindas de volta!</h5>
+            <p class="text-muted small">Insira seus dados para acessar sua conta</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 small" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>Usuário ou senha incorretos. Tente novamente.</div>
+                </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label for="email" class="form-label text-white-50 small fw-bold">USUÁRIO / E-MAIL</label>
+                {{ form.username }}
+            </div>
+
+            <div class="mb-2">
+                <label for="password" class="form-label text-white-50 small fw-bold">SENHA</label>
+                {{ form.password }}
+            </div>
+
+            <div class="text-end mb-4">
+                <a href="#" class="text-muted small text-decoration-none hover-white">Esqueceu a senha?</a>
+            </div>
+
+            <button type="submit" class="btn btn-purple">
+                Entrar
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-muted small mb-0">
+                Não tem uma conta? 
+                <a href="{% url 'users:register' %}" class="link-purple">Cadastre-se</a>
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -13,10 +13,12 @@
 <body>
     <div class="container">
         <div class="text-center mb-3 mt-3">
-            <div class="d-inline-flex align-items-center gap-2 brand-logo">
-                <i class="bi bi-scissors text-purple" style="color: #a855f7"></i>
-                <span>BARBER TOP</span>
-            </div>
+            <a href="/">
+                <div class="d-inline-flex align-items-center gap-2 brand-logo">
+                    <i class="bi bi-scissors text-purple" style="color: #a855f7"></i>
+                    <span style="color: #ffffff;">BARBER TOP</span>
+                </div>
+            </a>
         </div>
 
         <div class="text-center mb-5">
@@ -61,7 +63,7 @@
         </div>
 
         <div class="text-center mt-5">
-            <p class="text-muted-custom">Já tem uma conta? <a href="#" class="login-link">Faça login</a></p>
+            <p class="text-muted-custom">Já tem uma conta? <a href="{% url 'users:login' %}" class="login-link">Faça login</a></p>
         </div>
     </div>
 </body>

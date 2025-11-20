@@ -1,140 +1,128 @@
-{% extends "base.html" %} {% load static %} {% block title %}FSW Barber - Cadastro Cliente{% endblock %} 
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}FSW Barber - Cadastro Cliente{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'users/css/form-user.css' %}" />
+{% endblock %}
 
 {% block content %}
-<head>
-    <link rel="stylesheet" href="{% static 'users/css/form-user.css' %}" />
-</head>
-
-<body>
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="mw-600">
-                <div class="text-center brand-logo mb-4">
-                    <div class="d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-scissors" style="color: #a855f7; font-size: 1.5rem"></i>
-                        <span class="fw-bold" style="font-size: 1.2rem">FSW BARBER</span>
-                    </div>
-                </div>
-
-                <a href="{% url 'users:register' %}" style="cursor: pointer;">
-                    <span class="btn-back text-decoration-none text-muted">
-                        <i class="bi bi-arrow-left"></i> Voltar
-                    </span>
-                </a>
-
-                <div class="card-form w-100 p-4 shadow-sm rounded" style="background: #1a1b1e; border: 1px solid #333">
-                    <h3 class="fw-bold mb-2 text-white">Criar Conta - Cliente</h3>
-                    <p class="text-muted mb-4">Preencha seus dados para começar</p>
-
-                    <form method="POST">
-                        {% csrf_token %} {% if client_form.non_field_errors %}
-                        <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            <div>{% for error in client_form.non_field_errors %} {{ error }} {% endfor %}</div>
-                        </div>
-                        {% endif %}
-
-                        <div class="mb-3">
-                            <label for="{{ client_form.username.id_for_label }}" class="form-label text-secondary"
-                                >Nome de Usuário</label
-                            >
-                            {{ client_form.username }} {% if client_form.username.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in client_form.username.errors %} {{ error }} {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="{{ client_form.email.id_for_label }}" class="form-label text-secondary"
-                                >E-mail</label
-                            >
-                            {{ client_form.email }} {% if client_form.email.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in client_form.email.errors %} {{ error }} {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="{{ client_form.phone.id_for_label }}" class="form-label text-secondary"
-                                >Telefone/WhatsApp</label
-                            >
-                            {{ client_form.phone }} {% if client_form.phone.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in client_form.phone.errors %} {{ error }} {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="{{ client_form.cpf.id_for_label }}" class="form-label text-secondary"
-                                >CPF</label
-                            >
-                            {{ client_form.cpf }} {% if client_form.cpf.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in client_form.cpf.errors %} {{ error }} {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="{{ client_form.password1.id_for_label }}" class="form-label text-secondary"
-                                >Senha</label
-                            >
-                            {{ client_form.password1 }} {% if client_form.password1.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in client_form.password1.errors %} {{ error }} {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="{{ client_form.password2.id_for_label }}" class="form-label text-secondary"
-                                >Confirmar Senha</label
-                            >
-                            {{ client_form.password2 }} {% if client_form.password2.errors %}
-                            <div class="text-danger small mt-1">
-                                {% for error in client_form.password2.errors %} {{ error }} {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="bg-dark border-secondary mb-3 p-2">
-                            <small class="text-light fw-bold mb-2 d-block">Sua senha deve ter:</small>
-                            <ul class="list-unstyled mb-0 small" id="password-requirements">
-                                <li id="req-length" class="text-muted">
-                                    <i class="bi bi-circle me-1"></i> Mínimo de 8 caracteres
-                                </li>
-                                <li id="req-number" class="text-muted">
-                                    <i class="bi bi-circle me-1"></i> Pelo menos um número
-                                </li>
-                                <li id="req-upper" class="text-muted">
-                                    <i class="bi bi-circle me-1"></i> Pelo menos uma letra maiúscula
-                                </li>
-                                <li id="req-match" class="text-muted">
-                                    <i class="bi bi-circle me-1"></i> As senhas conferem
-                                </li>
-                            </ul>
-                        </div>
-
-                        <button
-                            type="submit"
-                            class="btn w-100 fw-bold"
-                            style="background-color: #a855f7; color: white; padding: 10px"
-                        >
-                            Criar Conta
-                        </button>
-                    </form>
-
-                    <div class="text-center mt-3">
-                        <p class="text-muted-custom">Já tem uma conta? <a href="#" class="login-link">Faça login</a></p>
-                    </div>
-                </div>
-            </div>
+<div class="center-wrapper">
+    <div class="text-center brand-logo mb-4">
+        <div class="d-inline-flex align-items-center gap-2">
+            <i class="bi bi-scissors" style="color: #a855f7; font-size: 1.5rem"></i>
+            <span class="fw-bold text-white" style="font-size: 1.2rem">FSW BARBER</span>
         </div>
     </div>
 
-    <script src="{% static 'users/js/client-register.js' %}"></script>
-</body>
+    <div class="mb-3">
+        <a href="{% url 'users:register' %}" style="cursor: pointer" class="text-decoration-none">
+            <span class="btn-back hover-white"> <i class="bi bi-arrow-left"></i> Voltar </span>
+        </a>
+    </div>
+
+    <div class="card-form w-100 p-4 shadow-sm rounded" style="background: #1a1b1e; border: 1px solid #333">
+        <h3 class="fw-bold mb-2 text-white">Criar Conta - Cliente</h3>
+        <p class="text-muted mb-4">Preencha seus dados para começar</p>
+
+        <form method="POST">
+            {% csrf_token %} 
+            
+            {% if client_form.non_field_errors %}
+            <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>{% for error in client_form.non_field_errors %} {{ error }} {% endfor %}</div>
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label for="{{ client_form.username.id_for_label }}" class="form-label text-secondary">Nome de Usuário</label>
+                {{ client_form.username }} 
+                {% if client_form.username.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in client_form.username.errors %} {{ error }} {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ client_form.email.id_for_label }}" class="form-label text-secondary">E-mail</label>
+                {{ client_form.email }} 
+                {% if client_form.email.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in client_form.email.errors %} {{ error }} {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ client_form.phone.id_for_label }}" class="form-label text-secondary">Telefone/WhatsApp</label>
+                {{ client_form.phone }} 
+                {% if client_form.phone.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in client_form.phone.errors %} {{ error }} {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ client_form.cpf.id_for_label }}" class="form-label text-secondary">CPF</label>
+                {{ client_form.cpf }} 
+                {% if client_form.cpf.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in client_form.cpf.errors %} {{ error }} {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ client_form.password1.id_for_label }}" class="form-label text-secondary">Senha</label>
+                {{ client_form.password1 }} 
+                {% if client_form.password1.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in client_form.password1.errors %} {{ error }} {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ client_form.password2.id_for_label }}" class="form-label text-secondary">Confirmar Senha</label>
+                {{ client_form.password2 }} 
+                {% if client_form.password2.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in client_form.password2.errors %} {{ error }} {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="bg-dark border border-secondary rounded mb-3 p-3">
+                <small class="text-light fw-bold mb-2 d-block">Sua senha deve ter:</small>
+                <ul class="list-unstyled mb-0 small" id="password-requirements">
+                    <li id="req-length" class="text-muted"><i class="bi bi-circle me-1"></i> Mínimo de 8 caracteres</li>
+                    <li id="req-number" class="text-muted"><i class="bi bi-circle me-1"></i> Pelo menos um número</li>
+                    <li id="req-upper" class="text-muted"><i class="bi bi-circle me-1"></i> Pelo menos uma letra maiúscula</li>
+                    <li id="req-match" class="text-muted"><i class="bi bi-circle me-1"></i> As senhas conferem</li>
+                </ul>
+            </div>
+
+            <button type="submit" class="btn w-100 fw-bold" style="background-color: #a855f7; color: white; padding: 12px; border-radius: 8px">
+                Criar Conta
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-muted small">
+                Já tem uma conta?
+                <a href="{% url 'users:login' %}" style="color: #a855f7; text-decoration: none; font-weight: 600">Faça login</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'users/js/client-register.js' %}"></script>
 {% endblock %}
