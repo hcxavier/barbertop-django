@@ -1,0 +1,310 @@
+{% extends "base.html" %} {% load static %} {% block title %}FSW Barber - Cadastro Barbearia{% endblock %} 
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'users/css/form-barber.css' %}" />
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6" style="max-width: 600px">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center gap-2 fs-5 fw-bold">
+                        <i class="bi bi-scissors" style="color: #a855f7"></i>
+                        <span>FSW BARBER</span>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="step-label">
+                        <span id="stepText">Etapa 1 de 3</span>
+                        <span id="stepPercent">33%</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" id="progressBar" role="progressbar" style="width: 33%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <a
+                        id="btnVoltarUrl"
+                        href="{% url 'users:register' %}"
+                        class="btn-back-link text-decoration-none"
+                        style="cursor: pointer"
+                    >
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+
+                    <span
+                        id="btnVoltarStep"
+                        class="btn-back-link text-decoration-none"
+                        onclick="prevStep()"
+                        style="display: none; cursor: pointer"
+                    >
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </span>
+                </div>
+
+                <div class="card-form">
+                    <div id="step1" class="step-content active">
+                        <h4 class="fw-bold mb-2">Informações da Barbearia</h4>
+                        <p class="text-muted mb-4">Dados básicos do estabelecimento</p>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nome da Barbearia</label>
+                            <input
+                                type="text"
+                                id="inputNomeBarbearia"
+                                class="form-control form-control-dark"
+                                placeholder="Ex: Vintage Barber"
+                            />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descrição</label>
+                            <textarea
+                                id="inputDescricao"
+                                class="form-control form-control-dark"
+                                rows="3"
+                                placeholder="Descreva sua barbearia..."
+                            ></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Endereço Completo</label>
+                            <input
+                                type="text"
+                                id="inputEndereco"
+                                class="form-control form-control-dark"
+                                placeholder="Rua, número, bairro..."
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Imagem de Perfil</label>
+
+                            <label
+                                class="upload-area w-100 d-block position-relative overflow-hidden"
+                                style="
+                                    height: 160px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    border-style: dashed;
+                                "
+                            >
+                                <input
+                                    type="file"
+                                    id="inputImagemPerfil"
+                                    hidden
+                                    accept="image/*"
+                                    onchange="previewImagem(event)"
+                                />
+
+                                <div id="uploadPlaceholder" class="text-center">
+                                    <i class="bi bi-upload upload-icon fs-3"></i>
+                                    <div class="text-muted small mt-2">Clique para fazer upload</div>
+                                </div>
+
+                                <img
+                                    id="imagePreview"
+                                    src=""
+                                    alt="Preview"
+                                    class="position-absolute top-0 start-0 w-100 h-100"
+                                    style="object-fit: cover; display: none"
+                                />
+                            </label>
+                        </div>
+
+                        <button class="btn btn-purple w-100" onclick="nextStep()">
+                            Continuar <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+
+                    <div id="step2" class="step-content">
+                        <h4 class="fw-bold mb-2">Serviços e Funcionários</h4>
+                        <p class="text-muted mb-4">Configure o catálogo e equipe</p>
+
+                        <div
+                            class="mb-4 p-3 border border-secondary rounded-3"
+                            style="border-color: #3f3f46 !important"
+                        >
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0 fw-bold">Serviços Oferecidos</h6>
+                                <button class="btn btn-add-sm" data-bs-toggle="modal" data-bs-target="#modalServico">
+                                    <i class="bi bi-plus-lg"></i> Adicionar
+                                </button>
+                            </div>
+
+                            <div id="listaServicos" class="d-flex flex-column gap-2"></div>
+
+                            <div id="avisoListaVazia" class="text-center text-muted small py-2">
+                                Nenhum serviço cadastrado
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-2">Funcionários</h6>
+
+                            <div class="form-check form-switch mb-3">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="trabalhoSozinho"
+                                    onchange="toggleFuncionarioBtn()"
+                                />
+                                <label class="form-check-label text-muted" for="trabalhoSozinho"
+                                    >Apenas eu (trabalho sozinho)</label
+                                >
+                            </div>
+
+                            <div id="listaFuncionarios" class="d-flex flex-column gap-2 mb-3"></div>
+
+                            <div
+                                id="avisoFuncionarioVazio"
+                                class="text-muted small mb-3 text-center"
+                                style="display: none"
+                            >
+                                Nenhum funcionário adicionado
+                            </div>
+
+                            <button
+                                id="btnAddFuncionario"
+                                class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalFuncionario"
+                            >
+                                <i class="bi bi-plus-lg"></i> Adicionar Funcionário
+                            </button>
+                        </div>
+
+                        <button class="btn btn-purple w-100" onclick="nextStep()">
+                            Continuar <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+
+                    <div id="step3" class="step-content">
+                        <h4 class="fw-bold mb-2">Crie sua conta</h4>
+                        <p class="text-muted mb-4">Defina seus dados de acesso</p>
+
+                        <div class="mb-3">
+                            <label class="form-label">E-mail</label>
+                            <input
+                                type="email"
+                                id="inputEmail"
+                                class="form-control form-control-dark"
+                                placeholder="seu@email.com"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telefone</label>
+                            <input
+                                type="tel"
+                                id="inputTelefone"
+                                class="form-control form-control-dark"
+                                placeholder="(00) 00000-0000"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Senha</label>
+                            <input
+                                type="password"
+                                id="inputSenha"
+                                class="form-control form-control-dark"
+                                placeholder="Mínimo 6 caracteres"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Confirmar Senha</label>
+                            <input
+                                type="password"
+                                id="inputConfirmSenha"
+                                class="form-control form-control-dark"
+                                placeholder="Digite a senha novamente"
+                            />
+                        </div>
+
+                        <button class="btn btn-purple w-100" onclick="finalizarCadastro()">Finalizar Cadastro</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalServico" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Novo Serviço</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formServico">
+                        <div class="mb-3">
+                            <label class="form-label">Nome do Serviço</label>
+                            <input
+                                type="text"
+                                class="form-control form-control-dark"
+                                id="nomeServico"
+                                placeholder="Ex: Corte de Cabelo"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Preço (R$)</label>
+                            <input
+                                type="number"
+                                class="form-control form-control-dark"
+                                id="precoServico"
+                                placeholder="0,00"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descrição</label>
+                            <textarea class="form-control form-control-dark" id="descServico" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-purple" onclick="salvarServico()">Salvar Serviço</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalFuncionario" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Novo Funcionário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formFuncionario">
+                        <div class="mb-3">
+                            <label class="form-label">Nome</label>
+                            <input
+                                type="text"
+                                class="form-control form-control-dark"
+                                id="nomeFuncionario"
+                                placeholder="Nome do profissional"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Foto de Perfil</label>
+                            <input type="file" class="form-control form-control-dark" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-purple" onclick="salvarFuncionario()">Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'users/js/barber-register.js' %}"></script>
+</body>
+{% endblock %}
