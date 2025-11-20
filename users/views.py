@@ -24,15 +24,7 @@ def registerClient(request):
     return render(request, 'users/client-form.html', {'client_form': client_form})
 
 def registerBarber(request):
-    barbershop_form = BarbershopSignUpForm()
-
-    if request.method == 'POST':
-        barbershop_form = BarbershopSignUpForm(request.POST)
-        if barbershop_form.is_valid():
-            user = barbershop_form.save()
-            login(request, user)
-            return redirect('admin:index')
-         
+    barbershop_form = BarbershopSignUpForm()         
     return render(request, 'users/barber-form.html', {'barbershop_form': barbershop_form})
 
 @require_POST

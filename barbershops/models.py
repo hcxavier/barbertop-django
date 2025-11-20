@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.text import slugify
 
 class Address(models.Model):
     city = models.CharField(max_length=255)
@@ -22,6 +23,7 @@ class Barbershop(models.Model):
         related_name='barbershop_profile' # Permite acessar via user.barbershop_profile
     )
 
+    slug = models.SlugField(unique=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
 
@@ -30,6 +32,11 @@ class Barbershop(models.Model):
     imageUrl = models.TextField(blank=True, null=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
