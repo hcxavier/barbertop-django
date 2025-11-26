@@ -69,14 +69,16 @@ WSGI_APPLICATION = 'barbertop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'barber-top',  
-        'USER': 'user',        
-        'PASSWORD': 'password',    
-        'HOST': 'localhost',         
-        'PORT': '5432',
+        'NAME': os.environ.get('POSTGRESQL_DATABASE', 'barber-top'),
+        'USER': os.environ.get('POSTGRESQL_USERNAME', 'user'),
+        'PASSWORD': os.environ.get('POSTGRESQL_PASSWORD', 'password'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 

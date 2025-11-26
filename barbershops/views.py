@@ -9,3 +9,6 @@ def home(request):
     }
 
     return render(request, 'pages/home.html', context)
+
+def dashboard(request):
+    return render(request, 'pages/dashboard.html')

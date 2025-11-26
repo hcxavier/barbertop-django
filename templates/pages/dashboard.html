@@ -1,0 +1,208 @@
+{% extends "base-sidebar.html" %}
+{% load static %}
+{% block title %}BarberTop - Dashboard{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+{% endblock %}
+{% block content %}
+<main class="main-content">
+    <header class="top-bar">
+        <div class="user-profile">
+            <div class="avatar">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar"
+                    style="width: 100%; height: 100%; border-radius: 50%;">
+            </div>
+            <span style="font-size: 0.9rem; font-weight: 500;">Barbearia Dom Pedro</span>
+            <i class="bi bi-chevron-down ms-2" style="font-size: 0.8rem; color: var(--text-muted);"></i>
+        </div>
+    </header>
+
+    <h2 class="mb-4 fw-bold">Dashboard</h2>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="custom-card">
+                <div class="card-label">
+                    Agendamentos hoje
+                    <i class="bi bi-calendar-check icon-box"></i>
+                </div>
+                <div class="card-value">12</div>
+                <div class="card-stat">
+                    <i class="bi bi-arrow-up-right"></i> +2 desde ontem
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="custom-card">
+                <div class="card-label">
+                    Agendamentos Pendentes
+                    <i class="bi bi-clock-history icon-box" style="color: var(--warning);"></i>
+                </div>
+                <div class="card-value">3</div>
+                <div class="card-stat neutral">
+                    Ainda não confirmados
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="custom-card">
+                <div class="card-label">
+                    Receita do mês
+                    <i class="bi bi-wallet2 icon-box" style="color: #61cdff;"></i>
+                </div>
+                <div class="card-value">R$ 1.250,00</div>
+                <div class="card-stat">
+                    <i class="bi bi-arrow-up-right"></i> +12% vs mês anterior
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="custom-card">
+                <div class="card-label">
+                    Avaliação da barbearia
+                    <i class="bi bi-star-fill icon-box" style="color: #ffe600;"></i>
+                </div>
+                <div class="card-value">4,8</div>
+                <div class="card-stat">
+                    <i class="bi bi-chat-left-text"></i> +12 avaliações
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-8">
+            <div class="custom-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="m-0 fw-bold">Próximos Agendamentos</h5>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Ver todos</button>
+                </div>
+
+                <div class="appointments-list">
+                    <div class="appointment-item">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar bg-dark-subtle text-white">JS</div>
+                            <div class="client-info">
+                                <h6>João Silva</h6>
+                                <span>Corte e barba</span>
+                            </div>
+                        </div>
+                        <div class="time-status">
+                            <span class="time">09:00</span>
+                            <span class="status status-confirmed">Confirmado</span>
+                        </div>
+                    </div>
+
+                    <div class="appointment-item">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar bg-dark-subtle text-white">MX</div>
+                            <div class="client-info">
+                                <h6>Matheus Xavier</h6>
+                                <span>Corte, barba e sobrancelha</span>
+                            </div>
+                        </div>
+                        <div class="time-status">
+                            <span class="time">09:40</span>
+                            <span class="status status-confirmed">Confirmado</span>
+                        </div>
+                    </div>
+
+                    <div class="appointment-item">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar bg-dark-subtle text-white">MX</div>
+                            <div class="client-info">
+                                <h6>Matheus Xavier</h6>
+                                <span>Corte, barba e sobrancelha</span>
+                            </div>
+                        </div>
+                        <div class="time-status">
+                            <span class="time">09:40</span>
+                            <span class="status status-pending">Pendente</span>
+                        </div>
+                    </div>
+
+                    <div class="appointment-item">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar bg-dark-subtle text-white">MX</div>
+                            <div class="client-info">
+                                <h6>Matheus Xavier</h6>
+                                <span>Corte, barba e sobrancelha</span>
+                            </div>
+                        </div>
+                        <div class="time-status">
+                            <span class="time">09:40</span>
+                            <span class="status status-confirmed">Confirmado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="custom-card">
+                <div class="calendar-header">
+                    <h5 class="m-0 fw-bold">Fevereiro 2024</h5>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-dark border-secondary"><i class="bi bi-chevron-left"></i></button>
+                        <button class="btn btn-sm btn-dark border-secondary"><i
+                                class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="cal-day-name">D</div>
+                    <div class="cal-day-name">S</div>
+                    <div class="cal-day-name">T</div>
+                    <div class="cal-day-name">Q</div>
+                    <div class="cal-day-name">Q</div>
+                    <div class="cal-day-name">S</div>
+                    <div class="cal-day-name">S</div>
+
+                    <div class="cal-date muted">28</div>
+                    <div class="cal-date muted">29</div>
+                    <div class="cal-date muted">30</div>
+                    <div class="cal-date muted">31</div>
+                    <div class="cal-date">1</div>
+                    <div class="cal-date">2</div>
+                    <div class="cal-date">3</div>
+
+                    <div class="cal-date">4</div>
+                    <div class="cal-date">5</div>
+                    <div class="cal-date active">6</div>
+                    <div class="cal-date">7</div>
+                    <div class="cal-date">8</div>
+                    <div class="cal-date">9</div>
+                    <div class="cal-date">10</div>
+
+                    <div class="cal-date">11</div>
+                    <div class="cal-date">12</div>
+                    <div class="cal-date">13</div>
+                    <div class="cal-date">14</div>
+                    <div class="cal-date">15</div>
+                    <div class="cal-date">16</div>
+                    <div class="cal-date">17</div>
+
+                    <div class="cal-date">18</div>
+                    <div class="cal-date">19</div>
+                    <div class="cal-date">20</div>
+                    <div class="cal-date">21</div>
+                    <div class="cal-date">22</div>
+                    <div class="cal-date">23</div>
+                    <div class="cal-date">24</div>
+
+                    <div class="cal-date">25</div>
+                    <div class="cal-date">26</div>
+                    <div class="cal-date">27</div>
+                    <div class="cal-date">28</div>
+                    <div class="cal-date">29</div>
+                    <div class="cal-date muted">1</div>
+                    <div class="cal-date muted">2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
