@@ -3,17 +3,96 @@
 {% block title %}BarberTop - Dashboard{% endblock %}
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+<style>
+    .form-select-filter {
+        background-color: transparent;
+        color: #a8a8b3; /* var(--text-muted) */
+        border: 1px solid #29292e; /* var(--border-color) */
+        border-radius: 50px;
+        padding: 0.375rem 2.25rem 0.375rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a8a8b3' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 10px;
+        transition: all 0.2s ease;
+        min-width: 120px;
+    }
+
+    .form-select-filter:hover {
+        border-color: #a8a8b3;
+        color: #e1e1e6; /* var(--text-main) */
+    }
+
+    .form-select-filter:focus {
+        outline: none;
+        border-color: #8257e5; /* var(--primary-color) */
+        box-shadow: 0 0 0 2px rgba(130, 87, 229, 0.2);
+        color: #e1e1e6;
+    }
+
+    .form-select-filter option {
+        background-color: #18181b; /* var(--bg-card) */
+        color: #e1e1e6;
+        padding: 8px;
+    }
+
+    /* Calendar Dots */
+    .cal-date {
+        position: relative;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    .cal-dot {
+        width: 4px;
+        height: 4px;
+        background-color: #8257e5; /* primary */
+        border-radius: 50%;
+        position: absolute;
+        bottom: 4px;
+    }
+    .cal-date.muted .cal-dot {
+        opacity: 0.5;
+    }
+    .cal-date.active .cal-dot {
+        background-color: white;
+    }
+</style>
 {% endblock %}
 {% block content %}
 <main class="main-content">
     <header class="top-bar">
-        <div class="user-profile">
-            <div class="avatar">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar"
-                    style="width: 100%; height: 100%; border-radius: 50%;">
+        <div class="dropdown">
+            <div class="user-profile" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="avatar">
+                    <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ barbershop.name }}" alt="Avatar"
+                        style="width: 100%; height: 100%; border-radius: 50%;">
+                </div>
+                <span style="font-size: 0.9rem; font-weight: 500;">{{ barbershop.name }}</span>
+                <i class="bi bi-chevron-down ms-2" style="font-size: 0.8rem; color: var(--text-muted);"></i>
             </div>
-            <span style="font-size: 0.9rem; font-weight: 500;">Barbearia Dom Pedro</span>
-            <i class="bi bi-chevron-down ms-2" style="font-size: 0.8rem; color: var(--text-muted);"></i>
+
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink" style="background-color: #18181b; border-color: #29292e;">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                        <i class="bi bi-person"></i> Meu Perfil
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider" style="border-color: #29292e;"></li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{% url 'users:logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                </li>
+            </ul>
         </div>
     </header>
 
@@ -26,9 +105,13 @@
                     Agendamentos hoje
                     <i class="bi bi-calendar-check icon-box"></i>
                 </div>
-                <div class="card-value">12</div>
+                <div class="card-value">{{ appointments_today }}</div>
                 <div class="card-stat">
-                    <i class="bi bi-arrow-up-right"></i> +2 desde ontem
+                    {% if appointments_diff >= 0 %}
+                        <i class="bi bi-arrow-up-right"></i> +{{ appointments_diff }} desde ontem
+                    {% else %}
+                        <i class="bi bi-arrow-down-right"></i> {{ appointments_diff }} desde ontem
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -39,7 +122,7 @@
                     Agendamentos Pendentes
                     <i class="bi bi-clock-history icon-box" style="color: var(--warning);"></i>
                 </div>
-                <div class="card-value">3</div>
+                <div class="card-value">{{ pending_appointments_count }}</div>
                 <div class="card-stat neutral">
                     Ainda não confirmados
                 </div>
@@ -52,9 +135,13 @@
                     Receita do mês
                     <i class="bi bi-wallet2 icon-box" style="color: #61cdff;"></i>
                 </div>
-                <div class="card-value">R$ 1.250,00</div>
+                <div class="card-value">R$ {{ revenue_current_month }}</div>
                 <div class="card-stat">
-                    <i class="bi bi-arrow-up-right"></i> +12% vs mês anterior
+                    {% if revenue_growth >= 0 %}
+                        <i class="bi bi-arrow-up-right"></i> +{{ revenue_growth_display }}% vs mês anterior
+                    {% else %}
+                        <i class="bi bi-arrow-down-right"></i> -{{ revenue_growth_display }}% vs mês anterior
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -65,9 +152,9 @@
                     Avaliação da barbearia
                     <i class="bi bi-star-fill icon-box" style="color: #ffe600;"></i>
                 </div>
-                <div class="card-value">4,8</div>
+                <div class="card-value">{{ average_rating }}</div>
                 <div class="card-stat">
-                    <i class="bi bi-chat-left-text"></i> +12 avaliações
+                    <i class="bi bi-chat-left-text"></i> {{ total_ratings }} avaliações
                 </div>
             </div>
         </div>
@@ -77,66 +164,51 @@
         <div class="col-12 col-lg-8">
             <div class="custom-card">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="m-0 fw-bold">Próximos Agendamentos</h5>
-                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Ver todos</button>
+                    <h5 class="m-0 fw-bold">{{ list_title }}</h5>
+                    <form method="GET" action="{% url 'dashboard' %}">
+                        {% if selected_date %}
+                            <input type="hidden" name="date" value="{{ selected_date }}">
+                        {% endif %}
+                        <select name="status" class="form-select-filter" onchange="this.form.submit()">
+                            <option value="" {% if not current_status %}selected{% endif %}>Todos</option>
+                            {% for code, label in status_choices %}
+                                <option value="{{ code }}" {% if current_status == code %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
                 </div>
 
                 <div class="appointments-list">
+                    {% for booking in upcoming_appointments %}
                     <div class="appointment-item">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="avatar bg-dark-subtle text-white">JS</div>
+                            <div class="avatar bg-dark-subtle text-white">
+                                {{ booking.customer.username|slice:":2"|upper }}
+                            </div>
                             <div class="client-info">
-                                <h6>João Silva</h6>
-                                <span>Corte e barba</span>
+                                <h6>{{ booking.customer.first_name|default:booking.customer.username }}</h6>
+                                <span>{{ booking.service.name }}</span>
                             </div>
                         </div>
                         <div class="time-status">
-                            <span class="time">09:00</span>
-                            <span class="status status-confirmed">Confirmado</span>
+                            <span class="time">{{ booking.schedule|date:"H:i" }}</span>
+                            
+                            {% if booking.status == 'CONFIRMADO' %}
+                                <span class="status status-confirmed">{{ booking.get_status_display }}</span>
+                            {% elif booking.status == 'PENDENTE' %}
+                                <span class="status status-pending">{{ booking.get_status_display }}</span>
+                            {% elif booking.status == 'CANCELADO' %}
+                                <span class="status text-danger">{{ booking.get_status_display }}</span>
+                            {% else %}
+                                <span class="status">{{ booking.get_status_display }}</span>
+                            {% endif %}
                         </div>
                     </div>
-
-                    <div class="appointment-item">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar bg-dark-subtle text-white">MX</div>
-                            <div class="client-info">
-                                <h6>Matheus Xavier</h6>
-                                <span>Corte, barba e sobrancelha</span>
-                            </div>
+                    {% empty %}
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-2">Nenhum agendamento encontrado.</p>
                         </div>
-                        <div class="time-status">
-                            <span class="time">09:40</span>
-                            <span class="status status-confirmed">Confirmado</span>
-                        </div>
-                    </div>
-
-                    <div class="appointment-item">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar bg-dark-subtle text-white">MX</div>
-                            <div class="client-info">
-                                <h6>Matheus Xavier</h6>
-                                <span>Corte, barba e sobrancelha</span>
-                            </div>
-                        </div>
-                        <div class="time-status">
-                            <span class="time">09:40</span>
-                            <span class="status status-pending">Pendente</span>
-                        </div>
-                    </div>
-
-                    <div class="appointment-item">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar bg-dark-subtle text-white">MX</div>
-                            <div class="client-info">
-                                <h6>Matheus Xavier</h6>
-                                <span>Corte, barba e sobrancelha</span>
-                            </div>
-                        </div>
-                        <div class="time-status">
-                            <span class="time">09:40</span>
-                            <span class="status status-confirmed">Confirmado</span>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -144,11 +216,14 @@
         <div class="col-12 col-lg-4">
             <div class="custom-card">
                 <div class="calendar-header">
-                    <h5 class="m-0 fw-bold">Fevereiro 2024</h5>
+                    <h5 class="m-0 fw-bold text-capitalize">{{ current_month_display|date:"F Y" }}</h5>
                     <div class="btn-group">
-                        <button class="btn btn-sm btn-dark border-secondary"><i class="bi bi-chevron-left"></i></button>
-                        <button class="btn btn-sm btn-dark border-secondary"><i
-                                class="bi bi-chevron-right"></i></button>
+                        <a href="?year={{ prev_year }}&month={{ prev_month }}{% if current_status %}&status={{ current_status }}{% endif %}" class="btn btn-sm btn-dark border-secondary">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                        <a href="?year={{ next_year }}&month={{ next_month }}{% if current_status %}&status={{ current_status }}{% endif %}" class="btn btn-sm btn-dark border-secondary">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -161,45 +236,17 @@
                     <div class="cal-day-name">S</div>
                     <div class="cal-day-name">S</div>
 
-                    <div class="cal-date muted">28</div>
-                    <div class="cal-date muted">29</div>
-                    <div class="cal-date muted">30</div>
-                    <div class="cal-date muted">31</div>
-                    <div class="cal-date">1</div>
-                    <div class="cal-date">2</div>
-                    <div class="cal-date">3</div>
-
-                    <div class="cal-date">4</div>
-                    <div class="cal-date">5</div>
-                    <div class="cal-date active">6</div>
-                    <div class="cal-date">7</div>
-                    <div class="cal-date">8</div>
-                    <div class="cal-date">9</div>
-                    <div class="cal-date">10</div>
-
-                    <div class="cal-date">11</div>
-                    <div class="cal-date">12</div>
-                    <div class="cal-date">13</div>
-                    <div class="cal-date">14</div>
-                    <div class="cal-date">15</div>
-                    <div class="cal-date">16</div>
-                    <div class="cal-date">17</div>
-
-                    <div class="cal-date">18</div>
-                    <div class="cal-date">19</div>
-                    <div class="cal-date">20</div>
-                    <div class="cal-date">21</div>
-                    <div class="cal-date">22</div>
-                    <div class="cal-date">23</div>
-                    <div class="cal-date">24</div>
-
-                    <div class="cal-date">25</div>
-                    <div class="cal-date">26</div>
-                    <div class="cal-date">27</div>
-                    <div class="cal-date">28</div>
-                    <div class="cal-date">29</div>
-                    <div class="cal-date muted">1</div>
-                    <div class="cal-date muted">2</div>
+                    {% for week in calendar_data %}
+                        {% for day_info in week %}
+                            <a href="?date={{ day_info.date_str }}{% if current_status %}&status={{ current_status }}{% endif %}" 
+                               class="cal-date {% if not day_info.is_current_month %}muted{% endif %} {% if day_info.is_selected %}active{% endif %}">
+                                {{ day_info.day }}
+                                {% if day_info.has_appointments %}
+                                    <span class="cal-dot"></span>
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
