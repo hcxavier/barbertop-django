@@ -12,3 +12,4 @@ bookings/migrations/__pycache__
 users/__pycache__/
 users/migrations/__pycache__
 
+DATABASE_SCHEMA.md

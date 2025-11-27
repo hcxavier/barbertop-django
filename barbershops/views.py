@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.db.models import Sum, Avg
 from django.contrib.auth.decorators import user_passes_test
-from .models import Barbershop
+from django.contrib import messages
+from .models import Barbershop, BarbershopService
+from .forms import BarbershopServiceForm
 from bookings.models import Booking
 import calendar
 from datetime import datetime, timedelta
@@ -24,6 +26,8 @@ def dashboard(request):
     user = request.user
     
     if not hasattr(user, 'barbershop_profile'):
+        # Se for dono mas não tiver perfil de barbearia, redirecionar para criar?
+        # Por enquanto, apenas renderiza o dashboard vazio ou erro
         return render(request, 'pages/dashboard.html')
     
     barbershop = user.barbershop_profile
@@ -190,3 +194,71 @@ def dashboard(request):
     }
 
     return render(request, 'pages/dashboard.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def services_manage(request):
+    barbershop = request.user.barbershop_profile
+    services = BarbershopService.objects.filter(barbershop=barbershop)
+    
+    context = {
+        'barbershop': barbershop,
+        'services': services,
+        'form': BarbershopServiceForm() # Formulário para o modal de adicionar
+    }
+    return render(request, 'pages/dashboard-services.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def service_add(request):
+    barbershop = request.user.barbershop_profile
+    
+    if request.method == 'POST':
+        form = BarbershopServiceForm(request.POST)
+        if form.is_valid():
+            service = form.save(commit=False)
+            service.barbershop = barbershop
+            service.save()
+            messages.success(request, 'Serviço adicionado com sucesso!')
+            return redirect('barbershops:services_manage')
+    else:
+        form = BarbershopServiceForm()
+    
+    context = {
+        'barbershop': barbershop,
+        'form': form,
+        'title': 'Novo Serviço'
+    }
+    return render(request, 'pages/service-form.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def service_edit(request, service_id):
+    barbershop = request.user.barbershop_profile
+    service = get_object_or_404(BarbershopService, id=service_id, barbershop=barbershop)
+    
+    if request.method == 'POST':
+        form = BarbershopServiceForm(request.POST, instance=service)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Serviço atualizado com sucesso!')
+            return redirect('barbershops:services_manage')
+    else:
+        form = BarbershopServiceForm(instance=service)
+    
+    context = {
+        'barbershop': barbershop,
+        'form': form,
+        'title': f'Editar Serviço: {service.name}'
+    }
+    return render(request, 'pages/service-form.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def service_delete(request, service_id):
+    barbershop = request.user.barbershop_profile
+    service = get_object_or_404(BarbershopService, id=service_id, barbershop=barbershop)
+    
+    if request.method == 'POST':
+        service.delete()
+        messages.success(request, 'Serviço removido com sucesso!')
+        return redirect('barbershops:services_manage')
+    
+    # Se não for POST, apenas redireciona (segurança)
+    return redirect('barbershops:services_manage')

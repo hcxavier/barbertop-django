@@ -1,0 +1,145 @@
+{% extends "base-sidebar.html" %}
+{% load static %}
+
+{% block title %}BarberTop - Gerenciar Serviços{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <header class="top-bar">
+        <div class="dropdown">
+            <div class="user-profile" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="avatar">
+                    <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ barbershop.name }}" alt="Avatar"
+                        style="width: 100%; height: 100%; border-radius: 50%;">
+                </div>
+                <span style="font-size: 0.9rem; font-weight: 500;">{{ barbershop.name }}</span>
+                <i class="bi bi-chevron-down ms-2" style="font-size: 0.8rem; color: var(--text-muted);"></i>
+            </div>
+
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink" style="background-color: #18181b; border-color: #29292e;">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                        <i class="bi bi-person"></i> Meu Perfil
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider" style="border-color: #29292e;"></li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{% url 'users:logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0">Meus Serviços</h2>
+        <button type="button" class="btn btn-primary" style="background-color: #8257e5; border: none;" data-bs-toggle="modal" data-bs-target="#serviceModal">
+            <i class="bi bi-plus-lg me-2"></i>Novo Serviço
+        </button>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="background-color: #18181b; color: #e1e1e6; border: 1px solid #29292e;">
+                {{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        {% for service in services %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="custom-card h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        {% if service.imageUrl %}
+                            <img src="{{ service.imageUrl }}" alt="{{ service.name }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-3 d-flex align-items-center justify-content-center bg-dark-subtle" style="width: 60px; height: 60px;">
+                                <i class="bi bi-scissors text-muted" style="font-size: 1.5rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="fw-bold m-0">{{ service.name }}</h5>
+                            <span class="text-primary fw-bold">R$ {{ service.price }}</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'barbershops:service_edit' service.id %}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
+                            <li>
+                                <form action="{% url 'barbershops:service_delete' service.id %}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este serviço?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="text-muted small mb-0 flex-grow-1">{{ service.description|default:"Sem descrição."|truncatechars:100 }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-scissors display-1 mb-3 d-block opacity-25"></i>
+                <p class="fs-5">Nenhum serviço cadastrado.</p>
+                <button class="btn btn-outline-light mt-2" data-bs-toggle="modal" data-bs-target="#serviceModal">Cadastrar primeiro serviço</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal Novo Serviço -->
+    <div class="modal fade" id="serviceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #18181b; border: 1px solid #29292e; color: #e1e1e6;">
+                <div class="modal-header border-secondary" style="border-color: #29292e !important;">
+                    <h5 class="modal-title fw-bold">Novo Serviço</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'barbershops:service_add' %}" method="POST">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label text-muted">Nome do Serviço</label>
+                            {{ form.name }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.price.id_for_label }}" class="form-label text-muted">Preço (R$)</label>
+                            {{ form.price }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.imageUrl.id_for_label }}" class="form-label text-muted">URL da Imagem (Opcional)</label>
+                            {{ form.imageUrl }}
+                            <div class="form-text text-muted small" style="opacity: 0.5;">Cole um link de imagem da web.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label text-muted">Descrição</label>
+                            {{ form.description }}
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary" style="border-color: #29292e !important;">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #8257e5; border: none;">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

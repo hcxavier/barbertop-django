@@ -96,9 +96,13 @@
 
     </div>
     <nav class="d-flex flex-column w-100">
-        <a href="#" class="nav-link active">
+        <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
             <i class="bi bi-grid"></i>
             Dashboard
+        </a>
+        <a href="{% url 'barbershops:services_manage' %}" class="nav-link {% if 'services' in request.path %}active{% endif %}">
+            <i class="bi bi-scissors"></i>
+            Serviços
         </a>
         <a href="#" class="nav-link">
             <i class="bi bi-calendar4"></i>
