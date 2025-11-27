@@ -3,8 +3,8 @@ from django.utils import timezone
 from django.db.models import Sum, Avg
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
-from .models import Barbershop, BarbershopService
-from .forms import BarbershopServiceForm
+from .models import Barbershop, BarbershopService, Address
+from .forms import BarbershopServiceForm, BarbershopForm, AddressForm
 from bookings.models import Booking
 import calendar
 from datetime import datetime, timedelta
@@ -262,3 +262,40 @@ def service_delete(request, service_id):
     
     # Se não for POST, apenas redireciona (segurança)
     return redirect('barbershops:services_manage')
+
+@user_passes_test(is_barbershop_owner)
+def settings_manage(request):
+    barbershop = request.user.barbershop_profile
+    
+    # Inicializa os formulários com as instâncias atuais (para GET ou se o POST falhar)
+    barbershop_form = BarbershopForm(instance=barbershop)
+    address_form = AddressForm(instance=barbershop.address)
+
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type')
+
+        if form_type == 'general':
+            barbershop_form = BarbershopForm(request.POST, instance=barbershop)
+            if barbershop_form.is_valid():
+                barbershop_form.save()
+                messages.success(request, 'Informações da barbearia atualizadas!')
+                return redirect('barbershops:settings_manage')
+        
+        elif form_type == 'address':
+            # Se barbershop.address for None, o form cria um novo. Se existir, atualiza.
+            address_form = AddressForm(request.POST, instance=barbershop.address)
+            if address_form.is_valid():
+                address = address_form.save()
+                # Se não tinha endereço vinculado, vincula agora
+                if not barbershop.address:
+                    barbershop.address = address
+                    barbershop.save()
+                messages.success(request, 'Endereço atualizado!')
+                return redirect('barbershops:settings_manage')
+
+    context = {
+        'barbershop': barbershop,
+        'barbershop_form': barbershop_form,
+        'address_form': address_form,
+    }
+    return render(request, 'pages/dashboard-settings.html', context)

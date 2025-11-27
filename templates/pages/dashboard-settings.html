@@ -1,0 +1,215 @@
+{% extends "base-sidebar.html" %}
+{% load static %}
+
+{% block title %}BarberTop - Configurações{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <header class="top-bar">
+        <div class="dropdown">
+            <div class="user-profile" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="avatar">
+                    <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ barbershop.name }}" alt="Avatar"
+                        style="width: 100%; height: 100%; border-radius: 50%;">
+                </div>
+                <span style="font-size: 0.9rem; font-weight: 500;">{{ barbershop.name }}</span>
+                <i class="bi bi-chevron-down ms-2" style="font-size: 0.8rem; color: var(--text-muted);"></i>
+            </div>
+
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink" style="background-color: #18181b; border-color: #29292e;">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                        <i class="bi bi-person"></i> Meu Perfil
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider" style="border-color: #29292e;"></li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{% url 'users:logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="mb-5">
+        <h2 class="fw-bold m-0">Configurações</h2>
+        <p class="text-muted">Gerencie as informações da sua barbearia.</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert" style="background-color: #18181b; color: #e1e1e6; border: 1px solid #29292e;">
+                {{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Seção: Identidade Visual -->
+        <div class="col-12">
+            <div class="custom-card">
+                <div class="d-flex justify-content-between align-items-start mb-4 border-bottom border-secondary pb-3" style="border-color: #29292e !important;">
+                    <div>
+                        <h5 class="fw-bold mb-1">Perfil da Barbearia</h5>
+                        <p class="text-muted small mb-0">Informações visíveis para seus clientes.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#generalSettingsModal">
+                        <i class="bi bi-pencil-square me-2"></i>Editar
+                    </button>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-md-auto text-center text-md-start mb-3 mb-md-0">
+                        {% if barbershop.imageUrl %}
+                            <img src="{{ barbershop.imageUrl }}" alt="{{ barbershop.name }}" class="rounded-circle shadow-lg" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #29292e;">
+                        {% else %}
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-dark-subtle border border-secondary" style="width: 120px; height: 120px;">
+                                <i class="bi bi-shop text-muted display-5"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md ps-md-4 text-center text-md-start">
+                        <h3 class="fw-bold mb-2">{{ barbershop.name }}</h3>
+                        {% if barbershop.description %}
+                            <p class="text-muted mb-0" style="max-width: 600px;">{{ barbershop.description }}</p>
+                        {% else %}
+                            <p class="text-muted fst-italic mb-0 opacity-50">Adicione uma descrição para atrair mais clientes.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Endereço -->
+        <div class="col-12">
+            <div class="custom-card">
+                <div class="d-flex justify-content-between align-items-start mb-4 border-bottom border-secondary pb-3" style="border-color: #29292e !important;">
+                    <div>
+                        <h5 class="fw-bold mb-1">Localização</h5>
+                        <p class="text-muted small mb-0">Onde seus clientes podem te encontrar.</p>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#addressSettingsModal">
+                        <i class="bi bi-geo-alt me-2"></i>Editar Endereço
+                    </button>
+                </div>
+
+                {% if barbershop.address %}
+                    <div class="row g-4">
+                        <div class="col-md-6 col-lg-4">
+                            <span class="text-muted small d-block mb-1">Rua</span>
+                            <span class="fw-medium fs-5">{{ barbershop.address.street }}</span>
+                        </div>
+                        <div class="col-md-6 col-lg-2">
+                            <span class="text-muted small d-block mb-1">Número</span>
+                            <span class="fw-medium fs-5">{{ barbershop.address.number }}</span>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <span class="text-muted small d-block mb-1">Bairro</span>
+                            <span class="fw-medium fs-5">{{ barbershop.address.neighbourhood }}</span>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <span class="text-muted small d-block mb-1">Cidade / Estado</span>
+                            <span class="fw-medium fs-5">{{ barbershop.address.city }} - {{ barbershop.address.state }}</span>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 rounded-3" style="background-color: rgba(255,255,255,0.02);">
+                        <i class="bi bi-geo-alt-fill text-muted display-6 mb-3 d-block opacity-25"></i>
+                        <p class="text-muted mb-3">Nenhum endereço cadastrado.</p>
+                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addressSettingsModal">Cadastrar Endereço</button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Informações Gerais -->
+    <div class="modal fade" id="generalSettingsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #18181b; border: 1px solid #29292e; color: #e1e1e6;">
+                <div class="modal-header border-secondary" style="border-color: #29292e !important;">
+                    <h5 class="modal-title fw-bold">Editar Perfil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'barbershops:settings_manage' %}" method="POST">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="general">
+                        
+                        <div class="mb-3">
+                            <label for="{{ barbershop_form.name.id_for_label }}" class="form-label text-muted">Nome da Barbearia</label>
+                            {{ barbershop_form.name }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ barbershop_form.imageUrl.id_for_label }}" class="form-label text-muted">URL da Logo/Imagem</label>
+                            {{ barbershop_form.imageUrl }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ barbershop_form.description.id_for_label }}" class="form-label text-muted">Descrição</label>
+                            {{ barbershop_form.description }}
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary" style="border-color: #29292e !important;">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #8257e5; border: none;">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Endereço -->
+    <div class="modal fade" id="addressSettingsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="background-color: #18181b; border: 1px solid #29292e; color: #e1e1e6;">
+                <div class="modal-header border-secondary" style="border-color: #29292e !important;">
+                    <h5 class="modal-title fw-bold">Editar Endereço</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'barbershops:settings_manage' %}" method="POST">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="address">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-9">
+                                <label for="{{ address_form.street.id_for_label }}" class="form-label text-muted">Rua</label>
+                                {{ address_form.street }}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="{{ address_form.number.id_for_label }}" class="form-label text-muted">Número</label>
+                                {{ address_form.number }}
+                            </div>
+                            <div class="col-md-5">
+                                <label for="{{ address_form.neighbourhood.id_for_label }}" class="form-label text-muted">Bairro</label>
+                                {{ address_form.neighbourhood }}
+                            </div>
+                            <div class="col-md-5">
+                                <label for="{{ address_form.city.id_for_label }}" class="form-label text-muted">Cidade</label>
+                                {{ address_form.city }}
+                            </div>
+                            <div class="col-md-2">
+                                <label for="{{ address_form.state.id_for_label }}" class="form-label text-muted">Estado</label>
+                                {{ address_form.state }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary" style="border-color: #29292e !important;">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #8257e5; border: none;">Salvar Endereço</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</main>
+{% endblock %}

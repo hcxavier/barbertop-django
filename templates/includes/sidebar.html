@@ -108,5 +108,9 @@
             <i class="bi bi-calendar4"></i>
             Agenda
         </a>
+        <a href="{% url 'barbershops:settings_manage' %}" class="nav-link {% if 'settings' in request.path %}active{% endif %}">
+            <i class="bi bi-gear"></i>
+            Configurações
+        </a>
     </nav>
 </aside>
