@@ -1,0 +1,208 @@
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.subtitle {
+    color: #71717a; /* Cinza claro */
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* --- Card da Lista (Esquerda) --- */
+.booking-card-item {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.2s;
+}
+
+.booking-card-item:hover {
+    border-color: #3f3f46;
+}
+
+.badge-status {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.badge-confirmed {
+    background-color: rgba(34, 11, 46, 1); /* Fundo roxo escuro */
+    color: #a855f7;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.badge-finished {
+    background-color: #27272a;
+    color: #a1a1aa;
+}
+
+.booking-service-name {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.shop-info-sm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #d4d4d8;
+    font-size: 0.875rem;
+}
+
+.shop-avatar-xs {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Data no Card Lateral */
+.date-stack {
+    text-align: center;
+    min-width: 60px;
+}
+.date-month {
+    font-size: 0.75rem;
+    color: #a1a1aa;
+}
+.date-day {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+.date-time {
+    font-size: 0.75rem;
+    color: #a1a1aa;
+}
+
+/* --- Painel de Detalhes (Direita) --- */
+.details-card {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden; /* Para o mapa não sair */
+    height: 100%; /* Ocupa altura total se possível */
+}
+
+/* Mapa e Overlay */
+.map-container {
+    height: 180px;
+    width: 100%;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
+
+.map-overlay-card {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.shop-avatar-lg {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Seção Sobre e Contato */
+.details-body {
+    padding: 1.5rem;
+}
+
+.section-header {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    color: #e5e5e5;
+}
+
+.text-description {
+    color: #a1a1aa;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.contact-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.btn-copy {
+    background-color: #27272a;
+    color: #fff;
+    border: 1px solid #3f3f46;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
+.btn-copy:hover {
+    background-color: #3f3f46;
+    color: #fff;
+}
+
+/* Card Resumo do Agendamento (Fundo Preto dentro do Card Cinza) */
+.summary-box {
+    background-color: #0d0d0d; /* Mais escuro que o card */
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+.summary-label {
+    color: #a1a1aa;
+}
+.summary-value {
+    color: #fff;
+    text-align: right;
+}
+
+/* Botão Cancelar */
+.btn-cancel {
+    background-color: #ef4444; /* Vermelho */
+    color: white;
+    width: 100%;
+    font-weight: 600;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+}
+.btn-cancel:hover {
+    background-color: #dc2626;
+    color: white;
+}
