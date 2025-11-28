@@ -1,0 +1,141 @@
+{% extends "base-sidebar.html" %}
+{% load static %}
+
+{% block title %}BarberTop - Horários de Funcionamento{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <header class="top-bar">
+        <div class="dropdown">
+            <div class="user-profile" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="avatar">
+                    <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ barbershop.name }}" alt="Avatar"
+                        style="width: 100%; height: 100%; border-radius: 50%;">
+                </div>
+                <span style="font-size: 0.9rem; font-weight: 500;">{{ barbershop.name }}</span>
+                <i class="bi bi-chevron-down ms-2" style="font-size: 0.8rem; color: var(--text-muted);"></i>
+            </div>
+
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink" style="background-color: #18181b; border-color: #29292e;">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                        <i class="bi bi-person"></i> Meu Perfil
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider" style="border-color: #29292e;"></li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{% url 'users:logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0">Horários de Funcionamento</h2>
+        <button type="button" class="btn btn-primary" style="background-color: #8257e5; border: none;" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+            <i class="bi bi-plus-lg me-2"></i>Novo Horário
+        </button>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="background-color: #18181b; color: #e1e1e6; border: 1px solid #29292e;">
+                {{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        {% for operation in operations %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="custom-card h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold m-0">{{ operation.day_display }}</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'barbershops:schedule_edit' operation.id %}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
+                            <li>
+                                <form action="{% url 'barbershops:schedule_delete' operation.id %}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este horário?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Remover</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2 text-muted">
+                    <i class="bi bi-clock"></i>
+                    <span>{{ operation.timeInitial|time:"H:i" }} às {{ operation.timeFinal|time:"H:i" }}</span>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-calendar-x display-1 mb-3 d-block opacity-25"></i>
+                <p class="fs-5">Nenhum horário configurado.</p>
+                <button class="btn btn-outline-light mt-2" data-bs-toggle="modal" data-bs-target="#scheduleModal">Adicionar horário</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Modal Novo Horário -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #18181b; border: 1px solid #29292e; color: #e1e1e6;">
+                <div class="modal-header border-secondary" style="border-color: #29292e !important;">
+                    <h5 class="modal-title fw-bold">Novo Horário</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'barbershops:schedule_add' %}" method="POST">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <!-- Como não tenho o form context aqui facilmente sem passar na view (o que fiz, mas preciso renderizar campos manualmente ou usar form.as_p se passar 'form' no context da view schedule_manage) -->
+                        <!-- Vou assumir que posso criar um OperationForm vazio na view schedule_manage para passar para o modal -->
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Dia da Semana</label>
+                            <select name="weekDay" class="form-control">
+                                <option value="0">Segunda-feira</option>
+                                <option value="1">Terça-feira</option>
+                                <option value="2">Quarta-feira</option>
+                                <option value="3">Quinta-feira</option>
+                                <option value="4">Sexta-feira</option>
+                                <option value="5">Sábado</option>
+                                <option value="6">Domingo</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label text-muted">Início</label>
+                                <input type="time" name="timeInitial" class="form-control" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label text-muted">Fim</label>
+                                <input type="time" name="timeFinal" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary" style="border-color: #29292e !important;">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #8257e5; border: none;">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

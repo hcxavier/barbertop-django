@@ -1,5 +1,5 @@
 from django import forms
-from .models import BarbershopService, Barbershop, Address, Employee
+from .models import BarbershopService, Barbershop, Address, Employee, Operation
 
 class BarbershopServiceForm(forms.ModelForm):
     class Meta:
@@ -41,4 +41,25 @@ class EmployeeForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do funcionário'}),
             'urlProfilePhoto': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'URL da foto de perfil'}),
+        }
+
+class OperationForm(forms.ModelForm):
+    DAYS_OF_WEEK = [
+        (0, 'Segunda-feira'),
+        (1, 'Terça-feira'),
+        (2, 'Quarta-feira'),
+        (3, 'Quinta-feira'),
+        (4, 'Sexta-feira'),
+        (5, 'Sábado'),
+        (6, 'Domingo'),
+    ]
+
+    weekDay = forms.ChoiceField(choices=DAYS_OF_WEEK, widget=forms.Select(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Operation
+        fields = ['weekDay', 'timeInitial', 'timeFinal']
+        widgets = {
+            'timeInitial': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'timeFinal': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
         }

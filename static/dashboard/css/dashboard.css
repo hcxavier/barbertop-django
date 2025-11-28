@@ -326,3 +326,24 @@ body {
     color: var(--text-muted);
     opacity: 0.5;
 }
+
+/* --- Time Input Custom Style --- */
+input[type="time"] {
+  color-scheme: dark;
+  accent-color: var(--primary-color); /* Sets the picker button color */
+}
+
+/* Force white icon. The filter invert(1) makes black -> white. 
+   If color-scheme: dark makes it white, invert makes it black. 
+   We force it to be white by checking if it needs inversion or if we can just set color.
+   Actually, on Chrome with color-scheme:dark, the icon is often white.
+   If the user sees black, maybe they are on a browser where it stays black.
+   Let's try to force a specific filter that handles this.
+   Better yet, let's use a custom SVG icon to be 100% sure.
+*/
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+

@@ -3,8 +3,8 @@ from django.utils import timezone
 from django.db.models import Sum, Avg
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
-from .models import Barbershop, BarbershopService, Address, Employee
-from .forms import BarbershopServiceForm, BarbershopForm, AddressForm, EmployeeForm
+from .models import Barbershop, BarbershopService, Address, Employee, Operation
+from .forms import BarbershopServiceForm, BarbershopForm, AddressForm, EmployeeForm, OperationForm
 from bookings.models import Booking
 import calendar
 from datetime import datetime, timedelta
@@ -366,3 +366,91 @@ def settings_manage(request):
         'address_form': address_form,
     }
     return render(request, 'pages/dashboard-settings.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def schedule_manage(request):
+    barbershop = request.user.barbershop_profile
+    operations = Operation.objects.filter(barbershop=barbershop).order_by('weekDay')
+    
+    # Mapeamento para exibir nomes dos dias na view se necessário, ou usar no template
+    # O form já tem choices, mas para listar é bom ter o display name
+    days_map = {
+        0: 'Segunda-feira', 1: 'Terça-feira', 2: 'Quarta-feira',
+        3: 'Quinta-feira', 4: 'Sexta-feira', 5: 'Sábado', 6: 'Domingo'
+    }
+    
+    # Anexar nome do dia ao objeto (apenas para display)
+    for op in operations:
+        op.day_display = days_map.get(op.weekDay, 'Dia desconhecido')
+
+    context = {
+        'barbershop': barbershop,
+        'operations': operations,
+    }
+    return render(request, 'pages/dashboard-schedule.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def schedule_add(request):
+    barbershop = request.user.barbershop_profile
+    
+    if request.method == 'POST':
+        form = OperationForm(request.POST)
+        if form.is_valid():
+            # Verificar se já existe horário para este dia
+            week_day = form.cleaned_data['weekDay']
+            if Operation.objects.filter(barbershop=barbershop, weekDay=week_day).exists():
+                messages.error(request, 'Já existe um horário configurado para este dia.')
+            else:
+                operation = form.save(commit=False)
+                operation.barbershop = barbershop
+                operation.save()
+                messages.success(request, 'Horário adicionado com sucesso!')
+                return redirect('barbershops:schedule_manage')
+    else:
+        form = OperationForm()
+    
+    context = {
+        'barbershop': barbershop,
+        'form': form,
+        'title': 'Novo Horário'
+    }
+    return render(request, 'pages/schedule-form.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def schedule_edit(request, operation_id):
+    barbershop = request.user.barbershop_profile
+    operation = get_object_or_404(Operation, id=operation_id, barbershop=barbershop)
+    
+    if request.method == 'POST':
+        form = OperationForm(request.POST, instance=operation)
+        if form.is_valid():
+            # Verificar colisão de dias se o usuário mudar o dia
+            new_week_day = form.cleaned_data.get('weekDay')
+            # Se mudou o dia E já existe outro registro com esse novo dia
+            if str(new_week_day) != str(operation.weekDay) and Operation.objects.filter(barbershop=barbershop, weekDay=new_week_day).exists():
+                 messages.error(request, 'Já existe um horário configurado para este dia.')
+            else:
+                form.save()
+                messages.success(request, 'Horário atualizado com sucesso!')
+                return redirect('barbershops:schedule_manage')
+    else:
+        form = OperationForm(instance=operation)
+    
+    context = {
+        'barbershop': barbershop,
+        'form': form,
+        'title': 'Editar Horário'
+    }
+    return render(request, 'pages/schedule-form.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def schedule_delete(request, operation_id):
+    barbershop = request.user.barbershop_profile
+    operation = get_object_or_404(Operation, id=operation_id, barbershop=barbershop)
+    
+    if request.method == 'POST':
+        operation.delete()
+        messages.success(request, 'Horário removido com sucesso!')
+        return redirect('barbershops:schedule_manage')
+    
+    return redirect('barbershops:schedule_manage')

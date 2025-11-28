@@ -14,5 +14,10 @@ urlpatterns = [
     path('employees/<int:employee_id>/edit/', views.employee_edit, name='employee_edit'),
     path('employees/<int:employee_id>/delete/', views.employee_delete, name='employee_delete'),
 
+    path('schedule/', views.schedule_manage, name='schedule_manage'),
+    path('schedule/add/', views.schedule_add, name='schedule_add'),
+    path('schedule/<int:operation_id>/edit/', views.schedule_edit, name='schedule_edit'),
+    path('schedule/<int:operation_id>/delete/', views.schedule_delete, name='schedule_delete'),
+
     path('settings/', views.settings_manage, name='settings_manage'),
 ]
