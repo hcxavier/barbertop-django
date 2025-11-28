@@ -1,5 +1,5 @@
 from django import forms
-from .models import BarbershopService, Barbershop, Address
+from .models import BarbershopService, Barbershop, Address, Employee
 
 class BarbershopServiceForm(forms.ModelForm):
     class Meta:
@@ -32,4 +32,13 @@ class AddressForm(forms.ModelForm):
             'number': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Número'}),
             'neighbourhood': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bairro'}),
             'state': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Estado'}),
+        }
+
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['name', 'urlProfilePhoto']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do funcionário'}),
+            'urlProfilePhoto': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'URL da foto de perfil'}),
         }

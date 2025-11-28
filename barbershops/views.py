@@ -3,8 +3,8 @@ from django.utils import timezone
 from django.db.models import Sum, Avg
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
-from .models import Barbershop, BarbershopService, Address
-from .forms import BarbershopServiceForm, BarbershopForm, AddressForm
+from .models import Barbershop, BarbershopService, Address, Employee
+from .forms import BarbershopServiceForm, BarbershopForm, AddressForm, EmployeeForm
 from bookings.models import Booking
 import calendar
 from datetime import datetime, timedelta
@@ -194,6 +194,73 @@ def dashboard(request):
     }
 
     return render(request, 'pages/dashboard.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def employees_manage(request):
+    barbershop = request.user.barbershop_profile
+    employees = Employee.objects.filter(barbershop=barbershop)
+    
+    context = {
+        'barbershop': barbershop,
+        'employees': employees,
+        'form': EmployeeForm() # Formulário para o modal de adicionar
+    }
+    return render(request, 'pages/dashboard-employees.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def employee_add(request):
+    barbershop = request.user.barbershop_profile
+    
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST)
+        if form.is_valid():
+            employee = form.save(commit=False)
+            employee.barbershop = barbershop
+            employee.save()
+            messages.success(request, 'Funcionário adicionado com sucesso!')
+            return redirect('barbershops:employees_manage')
+    else:
+        form = EmployeeForm()
+    
+    context = {
+        'barbershop': barbershop,
+        'form': form,
+        'title': 'Novo Funcionário'
+    }
+    return render(request, 'pages/employee-form.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def employee_edit(request, employee_id):
+    barbershop = request.user.barbershop_profile
+    employee = get_object_or_404(Employee, id=employee_id, barbershop=barbershop)
+    
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Funcionário atualizado com sucesso!')
+            return redirect('barbershops:employees_manage')
+    else:
+        form = EmployeeForm(instance=employee)
+    
+    context = {
+        'barbershop': barbershop,
+        'form': form,
+        'title': f'Editar Funcionário: {employee.name}'
+    }
+    return render(request, 'pages/employee-form.html', context)
+
+@user_passes_test(is_barbershop_owner)
+def employee_delete(request, employee_id):
+    barbershop = request.user.barbershop_profile
+    employee = get_object_or_404(Employee, id=employee_id, barbershop=barbershop)
+    
+    if request.method == 'POST':
+        employee.delete()
+        messages.success(request, 'Funcionário removido com sucesso!')
+        return redirect('barbershops:employees_manage')
+    
+    return redirect('barbershops:employees_manage')
 
 @user_passes_test(is_barbershop_owner)
 def services_manage(request):

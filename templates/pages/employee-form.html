@@ -1,0 +1,78 @@
+{% extends "base-sidebar.html" %}
+{% load static %}
+
+{% block title %}BarberTop - {{ title }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+<style>
+    .form-control {
+        background-color: #18181b; /* var(--bg-card) */
+        border: 1px solid #29292e; /* var(--border-color) */
+        color: #e1e1e6; /* var(--text-main) */
+    }
+    
+    .form-control:focus {
+        background-color: #18181b;
+        border-color: #8257e5; /* var(--primary-color) */
+        color: #e1e1e6;
+        box-shadow: 0 0 0 0.25rem rgba(130, 87, 229, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: #a8a8b3; /* var(--text-muted) */
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{% url 'barbershops:employees_manage' %}" class="btn btn-outline-light btn-sm border-0">
+                <i class="bi bi-arrow-left fs-5"></i>
+            </a>
+            <h2 class="fw-bold m-0">{{ title }}</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="custom-card">
+                <form method="POST" class="p-2">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label for="{{ form.name.id_for_label }}" class="form-label text-muted">Nome do Funcionário</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.urlProfilePhoto.id_for_label }}" class="form-label text-muted">URL da Foto (Opcional)</label>
+                        {{ form.urlProfilePhoto }}
+                        {% if form.urlProfilePhoto.errors %}
+                            <div class="text-danger small mt-1">{{ form.urlProfilePhoto.errors }}</div>
+                        {% endif %}
+                        <div class="form-text text-muted small">Cole um link de imagem da web.</div>
+                    </div>
+
+                    <div class="d-flex gap-2 justify-content-end mt-5">
+                        <a href="{% url 'barbershops:employees_manage' %}" class="btn btn-outline-light">Cancelar</a>
+                        <button type="submit" class="btn btn-primary" style="background-color: #8257e5; border: none;">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
