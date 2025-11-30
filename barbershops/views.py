@@ -3,18 +3,34 @@ from django.utils import timezone
 from django.db.models import Sum, Avg
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
-from .models import Barbershop, BarbershopService, Address, Employee, Operation
+from .models import Barbershop, BarbershopService, Employee, Operation
 from .forms import BarbershopServiceForm, BarbershopForm, AddressForm, EmployeeForm, OperationForm
 from bookings.models import Booking
 import calendar
 from datetime import datetime, timedelta
+from django.shortcuts import render
+from django.db.models import Avg, Count, Q
+from .models import Barbershop
 
 def home(request):
-    # barbearias com as melhores notas de avaliações
-    barbers_recommended = Barbershop.objects.filter(rating__gte=4.5).all()
-    # barbershops = Barbershop.objects.all()
+    # recomendadas - barbearias com as notas acima de 4.5 em relação a media de avaliações
+    barbers_recommended = Barbershop.objects.filter(rating__gte=4.5).order_by('-rating')
+
+    # populares - barbearias com maior número de avaliações
+    barbers_popular = Barbershop.objects.filter(ratings_count__gt=6).order_by('-ratings_count')
+
+    # mais visitados - barbearias com maior número de agendamentos finalizados
+    barbers_most_visited = Barbershop.objects.annotate(
+        completed_bookings=Count(
+            'bookings', 
+            filter=Q(bookings__status='CONCLUIDO')
+        )
+    ).filter(completed_bookings__gt=5).order_by('-completed_bookings')
+
     context = {
-        'barbers_recommended': barbers_recommended
+        'barbers_recommended': barbers_recommended,
+        'barbers_popular': barbers_popular,
+        'barbers_most_visited': barbers_most_visited
     }
 
     return render(request, 'pages/home.html', context)
