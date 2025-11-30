@@ -10,10 +10,11 @@ import calendar
 from datetime import datetime, timedelta
 
 def home(request):
-    # TODO: buscar barbearias de cada categoria
-    barbershops = Barbershop.objects.all()
+    # barbearias com as melhores notas de avaliações
+    barbers_recommended = Barbershop.objects.filter(rating__gte=4.5).all()
+    # barbershops = Barbershop.objects.all()
     context = {
-        'barbershops': barbershops
+        'barbers_recommended': barbers_recommended
     }
 
     return render(request, 'pages/home.html', context)

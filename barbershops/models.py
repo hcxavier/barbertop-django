@@ -1,6 +1,9 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from django.db.models import Avg, Count
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 class Address(models.Model):
     city = models.CharField(max_length=255)
@@ -31,6 +34,11 @@ class Barbershop(models.Model):
     # endereço vinculado a uma barbearia
     address = models.OneToOneField(Address, on_delete=models.SET_NULL, null=True, blank=True)
     imageUrl = models.TextField(blank=True, null=True)
+    
+    # Novos campos para avaliação
+    rating = models.DecimalField(max_digits=3, decimal_places=1, default=0.0)
+    ratings_count = models.IntegerField(default=0)
+
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
@@ -82,3 +90,17 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"Rating {self.ratingNumber} para {self.barbershop.name}"
+
+# Signals para atualizar a média de avaliações automaticamente
+@receiver(post_save, sender=Rating)
+@receiver(post_delete, sender=Rating)
+def update_barbershop_rating(sender, instance, **kwargs):
+    barbershop = instance.barbershop
+    data = Rating.objects.filter(barbershop=barbershop).aggregate(
+        avg_rating=Avg('ratingNumber'),
+        count_rating=Count('id')
+    )
+    
+    barbershop.rating = data['avg_rating'] or 0.0
+    barbershop.ratings_count = data['count_rating'] or 0
+    barbershop.save()
