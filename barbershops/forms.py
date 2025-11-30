@@ -15,10 +15,11 @@ class BarbershopServiceForm(forms.ModelForm):
 class BarbershopForm(forms.ModelForm):
     class Meta:
         model = Barbershop
-        fields = ['name', 'description', 'imageUrl']
+        fields = ['name', 'description', 'telephone', 'imageUrl']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome da Barbearia'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição sobre a barbearia'}),
+            'telephone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefone da barbearia'}),
             'imageUrl': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'URL da Imagem/Logo'}),
         }
 

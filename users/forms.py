@@ -71,6 +71,7 @@ class ClientSignUpForm(UserCreationForm):
 
 class BarbershopSignUpForm(UserCreationForm):
     shop_name = forms.CharField(max_length=255, label="Nome da Barbearia")
+    telephone = forms.CharField(max_length=20, label="Telefone")
     description = forms.CharField(
         max_length=300, 
         required=False, 
@@ -96,9 +97,8 @@ class BarbershopSignUpForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Garante que email e telefone sejam obrigatórios
+        # Garante que email obrigatório
         self.fields['email'].required = True
-        self.fields['phone'].required = True
 
     def clean(self):
         cleaned_data = super().clean()
@@ -148,6 +148,7 @@ class BarbershopSignUpForm(UserCreationForm):
             address=address,
             name=self.cleaned_data['shop_name'],
             description=self.cleaned_data.get('description', ''),
+            telephone=self.cleaned_data['telephone']
             # imageUrl=self.cleaned_data.get('profile_image') 
         )
 

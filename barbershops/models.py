@@ -25,6 +25,7 @@ class Barbershop(models.Model):
 
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=255)
+    telephone = models.CharField(max_length=20)
     description = models.TextField(blank=True, null=True)
 
     # endereço vinculado a uma barbearia

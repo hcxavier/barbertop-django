@@ -2,7 +2,7 @@
 const fieldMap = {
     username: "inputUsername",
     email: "inputEmail",
-    phone: "inputTelefone",
+    telephone: "inputTelefone",
     password1: "inputSenha",
     password2: "inputConfirmSenha",
     shop_name: "inputNomeBarbearia",
@@ -72,6 +72,12 @@ async function finalizarCadastro() {
     const confirmSenha = document.getElementById("inputConfirmSenha").value;
     const nomeBarb = document.getElementById("inputNomeBarbearia").value;
     const username = document.getElementById("inputUsername").value;
+    const telefone = document.getElementById("inputTelefone").value;
+
+    if (!telefone) {
+        showGlobalError("Preencha o telefone comercial.");
+        return;
+    }
 
     if (senha !== confirmSenha) {
         document.getElementById("inputSenha").classList.add("is-invalid");
@@ -98,7 +104,7 @@ async function finalizarCadastro() {
     const formData = new FormData();
     formData.append("username", username);
     formData.append("email", document.getElementById("inputEmail").value);
-    formData.append("phone", document.getElementById("inputTelefone").value);
+    formData.append("telephone", document.getElementById("inputTelefone").value);
 
     formData.append("password1", senha);
     formData.append("password2", confirmSenha);
