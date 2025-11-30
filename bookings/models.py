@@ -13,10 +13,16 @@ class Booking(models.Model):
             settings.AUTH_USER_MODEL,  
             on_delete=models.CASCADE, 
             related_name="bookings"
-        )    
+        ) 
+
+    barbershop = models.ForeignKey(
+        'barbershops.Barbershop', 
+        on_delete=models.CASCADE, 
+        related_name="bookings" 
+    )   
         
     service = models.ForeignKey('barbershops.BarbershopService', on_delete=models.SET_NULL, null=True, related_name="bookings")    
-    employee = models.ForeignKey('barbershops.Employee', on_delete=models.SET_NULL, null=True, related_name="bookings")
+    employee = models.ForeignKey('barbershops.Employee', on_delete=models.SET_NULL, null=True, blank=True, related_name="bookings")
     
     schedule = models.DateTimeField() # Data e hora do agendamento
     status = models.CharField(
