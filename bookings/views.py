@@ -1,7 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from .models import Booking
 
+@login_required
 def booking_list(request, user_id):
+    if request.user.id != user_id:
+        return redirect('home')
+        
+    if request.user.is_owner:
+        return redirect('home')
+
     bookings_confirmed = Booking.objects.filter(customer_id=user_id, status='CONFIRMADO')
     bookings_finished = Booking.objects.filter(customer_id=user_id, status='CONCLUIDO')
 
