@@ -229,7 +229,7 @@ def employee_add(request):
     barbershop = request.user.barbershop_profile
     
     if request.method == 'POST':
-        form = EmployeeForm(request.POST)
+        form = EmployeeForm(request.POST, request.FILES)
         if form.is_valid():
             employee = form.save(commit=False)
             employee.barbershop = barbershop
@@ -252,7 +252,7 @@ def employee_edit(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id, barbershop=barbershop)
     
     if request.method == 'POST':
-        form = EmployeeForm(request.POST, instance=employee)
+        form = EmployeeForm(request.POST, request.FILES, instance=employee)
         if form.is_valid():
             form.save()
             messages.success(request, 'Funcionário atualizado com sucesso!')
@@ -296,7 +296,7 @@ def service_add(request):
     barbershop = request.user.barbershop_profile
     
     if request.method == 'POST':
-        form = BarbershopServiceForm(request.POST)
+        form = BarbershopServiceForm(request.POST, request.FILES)
         if form.is_valid():
             service = form.save(commit=False)
             service.barbershop = barbershop
@@ -319,7 +319,7 @@ def service_edit(request, service_id):
     service = get_object_or_404(BarbershopService, id=service_id, barbershop=barbershop)
     
     if request.method == 'POST':
-        form = BarbershopServiceForm(request.POST, instance=service)
+        form = BarbershopServiceForm(request.POST, request.FILES, instance=service)
         if form.is_valid():
             form.save()
             messages.success(request, 'Serviço atualizado com sucesso!')
@@ -359,7 +359,7 @@ def settings_manage(request):
         form_type = request.POST.get('form_type')
 
         if form_type == 'general':
-            barbershop_form = BarbershopForm(request.POST, instance=barbershop)
+            barbershop_form = BarbershopForm(request.POST, request.FILES, instance=barbershop)
             if barbershop_form.is_valid():
                 barbershop_form.save()
                 messages.success(request, 'Informações da barbearia atualizadas!')

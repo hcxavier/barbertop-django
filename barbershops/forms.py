@@ -9,7 +9,7 @@ class BarbershopServiceForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do serviço'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00'}),
-            'imageUrl': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://...'}),
+            'imageUrl': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
 class BarbershopForm(forms.ModelForm):
@@ -20,7 +20,7 @@ class BarbershopForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome da Barbearia'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição sobre a barbearia'}),
             'telephone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefone da barbearia'}),
-            'imageUrl': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'URL da Imagem/Logo'}),
+            'imageUrl': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
 class AddressForm(forms.ModelForm):
@@ -41,7 +41,7 @@ class EmployeeForm(forms.ModelForm):
         fields = ['name', 'urlProfilePhoto']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do funcionário'}),
-            'urlProfilePhoto': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'URL da foto de perfil'}),
+            'urlProfilePhoto': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
 class OperationForm(forms.ModelForm):
