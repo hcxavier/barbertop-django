@@ -141,7 +141,10 @@
                     </div>
 
                     {% if selected_booking.status == 'CONFIRMADO' %}
-                    <button class="btn btn-cancel">Cancelar Reserva</button>
+                    <form action="{% url 'bookings:booking_cancel' selected_booking.id %}" method="POST" onsubmit="return confirm('Tem certeza que deseja cancelar?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-cancel w-100">Cancelar Reserva</button>
+                    </form>
                     {% endif %}
                 </div>
             </div>
