@@ -64,3 +64,18 @@ class OperationForm(forms.ModelForm):
             'timeInitial': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
             'timeFinal': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
         }
+
+from .models import Rating
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['ratingNumber', 'ratingDescription']
+        widgets = {
+            'ratingNumber': forms.HiddenInput(), # O valor será definido via JS ao clicar nas estrelas
+            'ratingDescription': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 3, 
+                'placeholder': 'Conte como foi sua experiência...'
+            }),
+        }

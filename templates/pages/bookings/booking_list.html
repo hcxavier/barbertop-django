@@ -52,7 +52,13 @@
                         {% endif %}
                         <span>{{booking.service.barbershop.name}}</span>
                     </div>
-                    <button class="btn btn-secondary btn-sm mt-2">Avaliar Barbearia</button>
+                    <button class="btn btn-secondary btn-sm mt-2" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#ratingModal" 
+                            data-barbershop-id="{{ booking.service.barbershop.id }}"
+                            data-barbershop-name="{{ booking.service.barbershop.name }}">
+                        Avaliar Barbearia
+                    </button>
                 </div>
                 <div class="date-stack">
                     <div class="date-month">{{booking.schedule|date:"F"}}</div>
@@ -143,4 +149,129 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de Avaliação -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="ratingModalLabel">Avaliar Barbearia</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'barbershops:rate_barbershop' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="barbershop_id" id="modalBarbershopId">
+                
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <h5 id="modalBarbershopName" class="fw-bold mb-3">Nome da Barbearia</h5>
+                        <p class="text-muted small">Toque nas estrelas para avaliar</p>
+                        
+                        <div class="rating-stars d-flex justify-content-center gap-2">
+                            <i class="bi bi-star fs-2 star-icon" data-value="1"></i>
+                            <i class="bi bi-star fs-2 star-icon" data-value="2"></i>
+                            <i class="bi bi-star fs-2 star-icon" data-value="3"></i>
+                            <i class="bi bi-star fs-2 star-icon" data-value="4"></i>
+                            <i class="bi bi-star fs-2 star-icon" data-value="5"></i>
+                        </div>
+                        <input type="hidden" name="ratingNumber" id="ratingValue" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ratingDescription" class="form-label text-muted">Comentário (Opcional)</label>
+                        <textarea class="form-control bg-dark border-secondary text-white" name="ratingDescription" id="ratingDescription" rows="3" placeholder="Conte como foi sua experiência..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #8156db; border: none;">Enviar Avaliação</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingModal = document.getElementById('ratingModal');
+        
+        ratingModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const barbershopId = button.getAttribute('data-barbershop-id');
+            const barbershopName = button.getAttribute('data-barbershop-name');
+            
+            const modalIdInput = ratingModal.querySelector('#modalBarbershopId');
+            const modalNameTitle = ratingModal.querySelector('#modalBarbershopName');
+            
+            modalIdInput.value = barbershopId;
+            modalNameTitle.textContent = barbershopName;
+            
+            // Reset stars
+            resetStars();
+        });
+
+        // Star rating logic
+        const stars = document.querySelectorAll('.star-icon');
+        const ratingInput = document.getElementById('ratingValue');
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = this.getAttribute('data-value');
+                ratingInput.value = value;
+                updateStars(value);
+            });
+            
+            star.addEventListener('mouseover', function() {
+                const value = this.getAttribute('data-value');
+                highlightStars(value);
+            });
+            
+             star.addEventListener('mouseout', function() {
+                const currentValue = ratingInput.value;
+                if (currentValue) {
+                    updateStars(currentValue);
+                } else {
+                    resetStars();
+                }
+            });
+        });
+
+        function updateStars(value) {
+            stars.forEach(s => {
+                if (s.getAttribute('data-value') <= value) {
+                    s.classList.remove('bi-star');
+                    s.classList.add('bi-star-fill');
+                    s.style.color = '#facc15'; // Yellow
+                } else {
+                    s.classList.remove('bi-star-fill');
+                    s.classList.add('bi-star');
+                    s.style.color = ''; // Reset
+                }
+            });
+        }
+        
+        function highlightStars(value) {
+             stars.forEach(s => {
+                if (s.getAttribute('data-value') <= value) {
+                    s.classList.remove('bi-star');
+                    s.classList.add('bi-star-fill');
+                    s.style.color = '#facc15'; 
+                } else {
+                    s.classList.remove('bi-star-fill');
+                    s.classList.add('bi-star');
+                     s.style.color = ''; 
+                }
+            });
+        }
+
+        function resetStars() {
+            stars.forEach(s => {
+                s.classList.remove('bi-star-fill');
+                s.classList.add('bi-star');
+                s.style.color = '';
+            });
+        }
+    });
+</script>
 {% endblock %}

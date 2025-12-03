@@ -471,3 +471,24 @@ def schedule_delete(request, operation_id):
         return redirect('barbershops:schedule_manage')
     
     return redirect('barbershops:schedule_manage')
+
+from django.contrib.auth.decorators import login_required
+from .forms import RatingForm
+
+@login_required
+def rate_barbershop(request):
+    if request.method == 'POST':
+        barbershop_id = request.POST.get('barbershop_id')
+        barbershop = get_object_or_404(Barbershop, id=barbershop_id)
+        
+        form = RatingForm(request.POST)
+        if form.is_valid():
+            rating = form.save(commit=False)
+            rating.barbershop = barbershop
+            rating.customer = request.user
+            rating.save()
+            messages.success(request, f'Avaliação enviada para {barbershop.name}!')
+        else:
+            messages.error(request, 'Erro ao enviar avaliação. Verifique os dados.')
+            
+    return redirect('bookings:booking_list', user_id=request.user.id)
