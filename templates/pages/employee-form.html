@@ -40,7 +40,7 @@
     <div class="row justify-content-center">
         <div class="col-12 col-lg-8">
             <div class="custom-card">
-                <form method="POST" class="p-2">
+                <form method="POST" class="p-2" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     {% if form.non_field_errors %}
@@ -58,12 +58,11 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="{{ form.urlProfilePhoto.id_for_label }}" class="form-label text-muted">URL da Foto (Opcional)</label>
+                        <label for="{{ form.urlProfilePhoto.id_for_label }}" class="form-label text-muted">Foto de Perfil (Opcional)</label>
                         {{ form.urlProfilePhoto }}
                         {% if form.urlProfilePhoto.errors %}
                             <div class="text-danger small mt-1">{{ form.urlProfilePhoto.errors }}</div>
                         {% endif %}
-                        <div class="form-text text-muted small">Cole um link de imagem da web.</div>
                     </div>
 
                     <div class="d-flex gap-2 justify-content-end mt-5">

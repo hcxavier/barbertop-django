@@ -1,5 +1,6 @@
 .env
 /barber
+/media/
 
 barbertop/__pycache__/
 

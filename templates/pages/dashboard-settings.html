@@ -9,32 +9,7 @@
 
 {% block content %}
 <main class="main-content">
-    <header class="top-bar">
-        <div class="dropdown">
-            <div class="user-profile" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="avatar">
-                    <img src="https://api.dicebear.com/7.x/initials/svg?seed={{ barbershop.name }}" alt="Avatar"
-                        style="width: 100%; height: 100%; border-radius: 50%;">
-                </div>
-                <span style="font-size: 0.9rem; font-weight: 500;">{{ barbershop.name }}</span>
-                <i class="bi bi-chevron-down ms-2" style="font-size: 0.8rem; color: var(--text-muted);"></i>
-            </div>
-
-            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink" style="background-color: #18181b; border-color: #29292e;">
-                <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2" href="#">
-                        <i class="bi bi-person"></i> Meu Perfil
-                    </a>
-                </li>
-                <li><hr class="dropdown-divider" style="border-color: #29292e;"></li>
-                <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{% url 'users:logout' %}">
-                        <i class="bi bi-box-arrow-right"></i> Sair
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </header>
+    {% include 'includes/dashboard_header.html' %}
 
     <div class="mb-5">
         <h2 class="fw-bold m-0">Configurações</h2>
@@ -67,7 +42,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-auto text-center text-md-start mb-3 mb-md-0">
                         {% if barbershop.imageUrl %}
-                            <img src="{{ barbershop.imageUrl }}" alt="{{ barbershop.name }}" class="rounded-circle shadow-lg" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #29292e;">
+                            <img src="{{ barbershop.imageUrl.url }}" alt="{{ barbershop.name }}" class="rounded-circle shadow-lg" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #29292e;">
                         {% else %}
                             <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-dark-subtle border border-secondary" style="width: 120px; height: 120px;">
                                 <i class="bi bi-shop text-muted display-5"></i>
@@ -138,7 +113,7 @@
                     <h5 class="modal-title fw-bold">Editar Perfil</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{% url 'barbershops:settings_manage' %}" method="POST">
+                <form action="{% url 'barbershops:settings_manage' %}" method="POST" enctype="multipart/form-data">
                     <div class="modal-body">
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="general">
@@ -149,7 +124,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="{{ barbershop_form.imageUrl.id_for_label }}" class="form-label text-muted">URL da Logo/Imagem</label>
+                            <label for="{{ barbershop_form.imageUrl.id_for_label }}" class="form-label text-muted">Logo/Imagem</label>
                             {{ barbershop_form.imageUrl }}
                         </div>
 
