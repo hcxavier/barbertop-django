@@ -12,17 +12,19 @@
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <div class="d-flex align-items-center gap-4 flex-column flex-lg-row mt-3 mt-lg-0">
-                {% if user.is_authenticated %}
-                    {% if user.is_owner %}
-                        <a href="/dashboard" class="text-white text-decoration-none fw-medium d-flex align-items-center gap-2">
-                            <i class="bi bi-window-sidebar"></i> Dashboard
-                        </a>
-                    {% else %}
-                        <a href="#" class="text-white text-decoration-none fw-medium d-flex align-items-center gap-2">
-                            <i class="bi bi-calendar4"></i> Agendamentos
-                        </a>
-                    {% endif %}
-                
+                {% if user.is_authenticated %} {% if user.is_owner %}
+                <a href="/dashboard" class="text-white text-decoration-none fw-medium d-flex align-items-center gap-2">
+                    <i class="bi bi-window-sidebar"></i> Dashboard
+                </a>
+                {% else %}
+                <a
+                    href="{% url 'bookings:booking_list' user.id %}"
+                    class="text-white text-decoration-none fw-medium d-flex align-items-center gap-2"
+                >
+                    <i class="bi bi-calendar4"></i> Agendamentos
+                </a>
+                {% endif %}
+
                 <div class="dropdown">
                     <a
                         href="#"

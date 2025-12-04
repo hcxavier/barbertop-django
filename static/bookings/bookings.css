@@ -24,11 +24,18 @@
     justify-content: space-between;
     align-items: center;
     transition: border-color 0.2s;
+    cursor: pointer;
 }
 
 .booking-card-item:hover {
     border-color: #3f3f46;
 }
+
+.booking-card-selected {
+    border-color: #a855f7 !important; /* Roxo destaque e importante para sobrescrever estilo inline se houver */
+    background-color: #220b2e; /* Fundo levemente roxo para destacar */
+}
+
 
 .badge-status {
     font-size: 0.75rem;

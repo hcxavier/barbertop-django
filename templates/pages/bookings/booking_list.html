@@ -1,4 +1,5 @@
 {% extends "base.html" %} {% load static %} {% block title %}FSW Barber - Agendamentos{% endblock %} 
+
 {% block extra_head%}
 <link rel="stylesheet" href="{% static 'bookings/bookings.css' %}" />
 {% endblock %} {% block content %}
@@ -10,7 +11,25 @@
             {% if bookings_confirmed %}
             <span class="subtitle">Confirmados</span>
             {% for booking in bookings_confirmed %}
-            <div class="booking-card-item cursor-pointer" style="border-color: #a855f7">
+            <div
+                class="booking-card-item cursor-pointer {% if selected_booking and selected_booking.id == booking.id %}booking-card-selected{% endif %}"
+                style="border-color: #a855f7"
+                onclick="selectBooking(this)"
+                data-id="{{booking.id}}"
+                data-service-name="{{booking.service.name}}"
+                data-service-price="{{booking.service.price}}"
+                data-date-day="{{booking.schedule|date:'d'}}"
+                data-date-month="{{booking.schedule|date:'F'}}"
+                data-date-time="{{booking.schedule|date:'H:i'}}"
+                data-shop-name="{{booking.service.barbershop.name}}"
+                data-shop-address="{{booking.service.barbershop.address}}"
+                data-shop-img="{% if booking.service.barbershop.imageUrl %}{{ booking.service.barbershop.imageUrl.url }}{% else %}https://api.dicebear.com/7.x/initials/svg?seed={{ booking.service.barbershop.name }}{% endif %}"
+                data-shop-phone="{{booking.service.barbershop.telephone}}"
+                data-shop-description="{{booking.service.barbershop.description}}"
+                data-status="{{booking.status}}"
+                data-status-display="{{booking.get_status_display}}"
+                data-cancel-url="{% url 'bookings:booking_cancel' booking.id %}"
+            >
                 <div>
                     <span class="badge-status badge-confirmed">Confirmado</span>
                     <h3 class="booking-service-name">{{booking.service.name}}</h3>
@@ -36,7 +55,24 @@
             {% endfor %} {% endif %} {% if bookings_finished %}
             <span class="subtitle mt-4">Finalizados</span>
             {% for booking in bookings_finished %}
-            <div class="booking-card-item opacity-75">
+            <div
+                class="booking-card-item opacity-75 {% if selected_booking and selected_booking.id == booking.id %}booking-card-selected{% endif %}"
+                onclick="selectBooking(this)"
+                data-id="{{booking.id}}"
+                data-service-name="{{booking.service.name}}"
+                data-service-price="{{booking.service.price}}"
+                data-date-day="{{booking.schedule|date:'d'}}"
+                data-date-month="{{booking.schedule|date:'F'}}"
+                data-date-time="{{booking.schedule|date:'H:i'}}"
+                data-shop-name="{{booking.service.barbershop.name}}"
+                data-shop-address="{{booking.service.barbershop.address}}"
+                data-shop-img="{% if booking.service.barbershop.imageUrl %}{{ booking.service.barbershop.imageUrl.url }}{% else %}https://api.dicebear.com/7.x/initials/svg?seed={{ booking.service.barbershop.name }}{% endif %}"
+                data-shop-phone="{{booking.service.barbershop.telephone}}"
+                data-shop-description="{{booking.service.barbershop.description}}"
+                data-status="{{booking.status}}"
+                data-status-display="{{booking.get_status_display}}"
+                data-cancel-url="{% url 'bookings:booking_cancel' booking.id %}"
+            >
                 <div>
                     <span class="badge-status badge-finished">Finalizado</span>
                     <h3 class="booking-service-name">{{booking.service.name}}</h3>
@@ -52,11 +88,14 @@
                         {% endif %}
                         <span>{{booking.service.barbershop.name}}</span>
                     </div>
-                    <button class="btn btn-secondary btn-sm mt-2" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#ratingModal" 
-                            data-barbershop-id="{{ booking.service.barbershop.id }}"
-                            data-barbershop-name="{{ booking.service.barbershop.name }}">
+                    <button
+                        class="btn btn-secondary btn-sm mt-2"
+                        onclick="event.stopPropagation()"
+                        data-bs-toggle="modal"
+                        data-bs-target="#ratingModal"
+                        data-barbershop-id="{{ booking.service.barbershop.id }}"
+                        data-barbershop-name="{{ booking.service.barbershop.name }}"
+                    >
                         Avaliar Barbearia
                     </button>
                 </div>
@@ -74,18 +113,17 @@
             <div class="details-card">
                 <div class="map-container" style="background-image: url('{% static 'bookings/imgs/map.png' %}')">
                     <div class="map-overlay-card">
-                        {% if selected_booking.service.barbershop.imageUrl %}
-                        <img src="{{ selected_booking.service.barbershop.imageUrl.url }}" class="shop-avatar-lg" alt="Logo" />
-                        {% else %}
                         <img
-                            src="https://api.dicebear.com/7.x/initials/svg?seed={{ selected_booking.service.barbershop.name }}"
+                            id="detail-shop-img"
+                            src="{% if selected_booking.service.barbershop.imageUrl %}{{ selected_booking.service.barbershop.imageUrl.url }}{% else %}https://api.dicebear.com/7.x/initials/svg?seed={{ selected_booking.service.barbershop.name }}{% endif %}"
                             class="shop-avatar-lg"
                             alt="Logo"
                         />
-                        {% endif %}
                         <div>
-                            <div class="fw-bold text-white">{{ selected_booking.service.barbershop.name }}</div>
-                            <div class="small text-muted text-truncate">
+                            <div id="detail-shop-name" class="fw-bold text-white">
+                                {{ selected_booking.service.barbershop.name }}
+                            </div>
+                            <div id="detail-shop-address" class="small text-muted text-truncate">
                                 {{ selected_booking.service.barbershop.address }}
                             </div>
                         </div>
@@ -94,58 +132,69 @@
 
                 <div class="details-body">
                     <h5 class="section-header">Sobre nós</h5>
-                    <p class="text-description">{{ selected_booking.service.barbershop.description }}</p>
+                    <p id="detail-shop-description" class="text-description">
+                        {{ selected_booking.service.barbershop.description }}
+                    </p>
 
                     <hr style="border-color: #333; margin: 1.5rem 0" />
 
                     <div class="contact-row">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-phone text-white"></i>
-                            <span>(11) 98204-5108</span>
+                            <span id="detail-shop-phone">{{ selected_booking.service.barbershop.telephone }}</span>
                         </div>
-                        <button class="btn btn-copy">Copiar</button>
-                    </div>
-
-                    <div class="contact-row">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-phone text-white"></i>
-                            <span>(11) 99503-2351</span>
-                        </div>
-                        <button class="btn btn-copy">Copiar</button>
+                        <button class="btn btn-copy" onclick="copyToClipboard('detail-shop-phone')">Copiar</button>
                     </div>
 
                     <hr style="border-color: #333; margin: 1.5rem 0" />
 
-                    <span class="badge-status badge-confirmed mb-2">Confirmado</span>
+                    <span
+                        id="detail-status-badge"
+                        class="badge-status {% if selected_booking.status == 'CONFIRMADO' %}badge-confirmed{% else %}badge-finished{% endif %} mb-2"
+                    >
+                        {{ selected_booking.get_status_display }}
+                    </span>
 
                     <div class="summary-box">
                         <div class="summary-row">
-                            <span class="summary-label fw-bold">{{ selected_booking.service.name }}</span>
-                            <span class="summary-value fw-bold">{{ selected_booking.service.price }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">Data</span>
-                            <span class="summary-value"
-                                >{{ selected_booking.schedule|date:"d" }} de
-                                {{selected_booking.schedule|date:"F"}}</span
+                            <span id="detail-service-name" class="summary-label fw-bold"
+                                >{{ selected_booking.service.name }}</span
+                            >
+                            <span id="detail-service-price" class="summary-value fw-bold"
+                                >{{ selected_booking.service.price }}</span
                             >
                         </div>
                         <div class="summary-row">
+                            <span class="summary-label">Data</span>
+                            <span class="summary-value">
+                                <span id="detail-date-day">{{ selected_booking.schedule|date:"d" }}</span> de
+                                <span id="detail-date-month">{{selected_booking.schedule|date:"F"}}</span>
+                            </span>
+                        </div>
+                        <div class="summary-row">
                             <span class="summary-label">Horário</span>
-                            <span class="summary-value">{{ selected_booking.schedule|date:"H:i" }}</span>
+                            <span id="detail-date-time" class="summary-value"
+                                >{{ selected_booking.schedule|date:"H:i" }}</span
+                            >
                         </div>
                         <div class="summary-row mb-0">
                             <span class="summary-label">Barbearia</span>
-                            <span class="summary-value">{{ selected_booking.service.barbershop.name }}</span>
+                            <span id="detail-barbershop-row-name" class="summary-value"
+                                >{{ selected_booking.service.barbershop.name }}</span
+                            >
                         </div>
                     </div>
 
-                    {% if selected_booking.status == 'CONFIRMADO' %}
-                    <form action="{% url 'bookings:booking_cancel' selected_booking.id %}" method="POST" onsubmit="return confirm('Tem certeza que deseja cancelar?');">
+                    <form
+                        id="detail-cancel-form"
+                        action="{% url 'bookings:booking_cancel' selected_booking.id %}"
+                        method="POST"
+                        onsubmit="return confirm('Tem certeza que deseja cancelar?');"
+                        style="display: {% if selected_booking.status == 'CONFIRMADO' %}block{% else %}none{% endif %};"
+                    >
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-cancel w-100">Cancelar Reserva</button>
+                        <button type="submit" class="btn btn-cancel w-100 mt-3">Cancelar Reserva</button>
                     </form>
-                    {% endif %}
                 </div>
             </div>
             {% endif %}
@@ -159,17 +208,22 @@
         <div class="modal-content bg-dark text-white border-secondary">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title" id="ratingModalLabel">Avaliar Barbearia</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
             </div>
             <form action="{% url 'barbershops:rate_barbershop' %}" method="POST">
                 {% csrf_token %}
-                <input type="hidden" name="barbershop_id" id="modalBarbershopId">
-                
+                <input type="hidden" name="barbershop_id" id="modalBarbershopId" />
+
                 <div class="modal-body">
                     <div class="text-center mb-4">
                         <h5 id="modalBarbershopName" class="fw-bold mb-3">Nome da Barbearia</h5>
                         <p class="text-muted small">Toque nas estrelas para avaliar</p>
-                        
+
                         <div class="rating-stars d-flex justify-content-center gap-2">
                             <i class="bi bi-star fs-2 star-icon" data-value="1"></i>
                             <i class="bi bi-star fs-2 star-icon" data-value="2"></i>
@@ -177,104 +231,31 @@
                             <i class="bi bi-star fs-2 star-icon" data-value="4"></i>
                             <i class="bi bi-star fs-2 star-icon" data-value="5"></i>
                         </div>
-                        <input type="hidden" name="ratingNumber" id="ratingValue" required>
+                        <input type="hidden" name="ratingNumber" id="ratingValue" required />
                     </div>
 
                     <div class="mb-3">
                         <label for="ratingDescription" class="form-label text-muted">Comentário (Opcional)</label>
-                        <textarea class="form-control bg-dark border-secondary text-white" name="ratingDescription" id="ratingDescription" rows="3" placeholder="Conte como foi sua experiência..."></textarea>
+                        <textarea
+                            class="form-control bg-dark border-secondary text-white"
+                            name="ratingDescription"
+                            id="ratingDescription"
+                            rows="3"
+                            placeholder="Conte como foi sua experiência..."
+                        ></textarea>
                     </div>
                 </div>
-                
+
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" style="background-color: #8156db; border: none;">Enviar Avaliação</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #8156db; border: none">
+                        Enviar Avaliação
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const ratingModal = document.getElementById('ratingModal');
-        
-        ratingModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const barbershopId = button.getAttribute('data-barbershop-id');
-            const barbershopName = button.getAttribute('data-barbershop-name');
-            
-            const modalIdInput = ratingModal.querySelector('#modalBarbershopId');
-            const modalNameTitle = ratingModal.querySelector('#modalBarbershopName');
-            
-            modalIdInput.value = barbershopId;
-            modalNameTitle.textContent = barbershopName;
-            
-            // Reset stars
-            resetStars();
-        });
-
-        // Star rating logic
-        const stars = document.querySelectorAll('.star-icon');
-        const ratingInput = document.getElementById('ratingValue');
-
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                const value = this.getAttribute('data-value');
-                ratingInput.value = value;
-                updateStars(value);
-            });
-            
-            star.addEventListener('mouseover', function() {
-                const value = this.getAttribute('data-value');
-                highlightStars(value);
-            });
-            
-             star.addEventListener('mouseout', function() {
-                const currentValue = ratingInput.value;
-                if (currentValue) {
-                    updateStars(currentValue);
-                } else {
-                    resetStars();
-                }
-            });
-        });
-
-        function updateStars(value) {
-            stars.forEach(s => {
-                if (s.getAttribute('data-value') <= value) {
-                    s.classList.remove('bi-star');
-                    s.classList.add('bi-star-fill');
-                    s.style.color = '#facc15'; // Yellow
-                } else {
-                    s.classList.remove('bi-star-fill');
-                    s.classList.add('bi-star');
-                    s.style.color = ''; // Reset
-                }
-            });
-        }
-        
-        function highlightStars(value) {
-             stars.forEach(s => {
-                if (s.getAttribute('data-value') <= value) {
-                    s.classList.remove('bi-star');
-                    s.classList.add('bi-star-fill');
-                    s.style.color = '#facc15'; 
-                } else {
-                    s.classList.remove('bi-star-fill');
-                    s.classList.add('bi-star');
-                     s.style.color = ''; 
-                }
-            });
-        }
-
-        function resetStars() {
-            stars.forEach(s => {
-                s.classList.remove('bi-star-fill');
-                s.classList.add('bi-star');
-                s.style.color = '';
-            });
-        }
-    });
-</script>
+<script src="{% static 'bookings/js/booking-selected.js' %}"></script>
 {% endblock %}
