@@ -1,9 +1,14 @@
-{% extends "base.html" %} {% load static %} {% block title %}FSW Barber - Agendamentos{% endblock %} 
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block title %}FSW Barber - Agendamentos{% endblock %} 
 
 {% block extra_head%}
 <link rel="stylesheet" href="{% static 'bookings/bookings.css' %}" />
-{% endblock %} {% block content %}
-<div class="container py-4">
+{% endblock %} 
+
+{% block content %}
+<div class="container pb-4">
     <h1 class="section-title">Agendamentos</h1>
 
     <div class="row g-4">

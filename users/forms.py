@@ -195,3 +195,36 @@ class CustomLoginForm(AuthenticationForm):
         'placeholder': '******',
         'id': 'password'
     }))
+
+class UserProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # --- Injeção de Estilos (CSS) ---
+        # Username
+        self.fields['username'].widget.attrs.update({
+            'class': 'form-control form-control-dark',
+            'placeholder': 'Digite seu nome de usuário'
+        })
+
+        # Email
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control form-control-dark',
+            'placeholder': 'seu@email.com'
+        })
+
+        # Phone
+        self.fields['phone'].widget.attrs.update({
+            'class': 'form-control form-control-dark',
+            'placeholder': '(11) 99999-9999'
+        })
+
+        # cpf
+        self.fields['cpf'].widget.attrs.update({
+            'class': 'form-control form-control-dark',
+            'placeholder': '000.000.000-00'
+        })
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'phone', 'cpf')

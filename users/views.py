@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
-from .forms import ClientSignUpForm, BarbershopSignUpForm,CustomLoginForm
+from .forms import ClientSignUpForm, BarbershopSignUpForm, CustomLoginForm, UserProfileForm
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def logout_view(request):
     logout(request)
@@ -64,3 +66,26 @@ def registerBarbershopApi(request):
     else:
         # Retorna os erros de validação (ex: senha fraca, usuário existente)
         return JsonResponse({'message': 'Dados inválidos', 'errors': form.errors}, status=400)
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('users:profile')
+    else:
+        form = UserProfileForm(instance=request.user)
+    
+    return render(request, 'pages/users/profile.html', {'form': form})
+
+@login_required
+def delete_account_view(request):
+    if request.method == 'POST':
+        user = request.user
+        user.delete()
+        logout(request)
+        messages.success(request, 'Sua conta foi excluída com sucesso.')
+        return redirect('home')
+    return redirect('users:profile')

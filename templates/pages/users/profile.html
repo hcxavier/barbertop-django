@@ -1,0 +1,148 @@
+{% extends "base.html" %} 
+{% load static %} 
+
+{% block title %}Meu Perfil - FSW Barber{% endblock %} 
+
+{% block extra_head%}
+<link rel="stylesheet" href="{% static 'users/css/profile.css' %}" />
+{% endblock %}
+
+{% block body_class %}{% endblock %}
+{% block content %}
+<div class="profile-container">
+    <div class="mw-600 px-3">
+        {% if messages %} {% for message in messages %}
+        <div
+            class="alert alert-success-custom alert-dismissible fade show d-flex align-items-center gap-2 mb-4"
+            role="alert"
+        >
+            <i class="bi bi-check-circle-fill"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %} {% endif %}
+
+        <div class="mb-4">
+            <a
+                href="/"
+                class="text-decoration-none text-muted hover-white d-inline-flex align-items-center gap-2"
+                style="font-size: 0.9rem"
+            >
+                <i class="bi bi-arrow-left"></i> Voltar para Início
+            </a>
+        </div>
+
+        <div class="card-profile">
+            <div class="profile-header">
+                <div class="avatar-circle">
+                    <i class="bi bi-person"></i>
+                </div>
+                <h3 class="fw-bold text-white mb-1">Meu Perfil</h3>
+                <p class="text-muted small">Gerencie suas informações pessoais</p>
+            </div>
+
+            <form method="POST" action="{% url 'users:profile' %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">
+                        <i class="bi bi-person me-1"></i> Nome de Usuário
+                    </label>
+                    <div class="input-group">{{ form.username }}</div>
+                    {% if form.username.errors %}
+                    <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                        <i class="bi bi-envelope me-1"></i> Email
+                    </label>
+                    {{ form.email }} {% if form.email.errors %}
+                    <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.phone.id_for_label }}" class="form-label">
+                        <i class="bi bi-phone me-1"></i> Telefone
+                    </label>
+                    {{ form.phone }} {% if form.phone.errors %}
+                    <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.cpf.id_for_label }}" class="form-label">
+                        <i class="bi bi-card-heading me-1"></i> CPF
+                    </label>
+                    {{ form.cpf }} {% if form.cpf.errors %}
+                    <div class="text-danger small mt-1">{{ form.cpf.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-purple">Salvar Alterações</button>
+                </div>
+            </form>
+
+            <div class="danger-zone">
+                <h6 class="text-danger fw-bold mb-2">Zona de Perigo</h6>
+                <p class="text-muted small mb-3">A exclusão da conta é permanente.</p>
+                <button
+                    type="button"
+                    class="btn btn-danger-outline btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteAccountModal"
+                >
+                    Excluir Minha Conta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div
+    class="modal fade"
+    id="deleteAccountModal"
+    tabindex="-1"
+    aria-labelledby="deleteAccountModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header modal-header-dark">
+                <h5 class="modal-title text-danger fw-bold" id="deleteAccountModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Excluir Conta
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-1">Tem certeza que deseja excluir sua conta?</p>
+                <small class="text-muted">Todos os seus dados serão perdidos.</small>
+            </div>
+            <div class="modal-footer modal-footer-dark">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{% url 'users:delete_account' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger fw-bold">Confirmar Exclusão</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var inputs = document.querySelectorAll(".card-profile input");
+        inputs.forEach(function (input) {
+            input.classList.add("form-control");
+        });
+    });
+</script>
+{% endblock %}

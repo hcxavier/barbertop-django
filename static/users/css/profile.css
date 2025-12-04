@@ -1,0 +1,126 @@
+body {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.profile-container {
+    padding-top: 85px;
+    padding-bottom: 4rem;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.mw-600 {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* --- Card Estilizado --- */
+.card-profile {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    background-color: #27272a;
+    border: 2px solid #a855f7;
+    color: #a855f7;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    color: #a1a1aa;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    background-color: #27272a;
+    border: 1px solid #3f3f46;
+    color: #e5e5e5;
+    padding: 12px 16px;
+    border-radius: 8px;
+}
+.form-control:focus {
+    background-color: #27272a;
+    border-color: #a855f7;
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
+}
+
+.btn-purple {
+    background-color: #a855f7;
+    color: white;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    transition: background-color 0.2s;
+}
+.btn-purple:hover {
+    background-color: #9333ea;
+    color: white;
+}
+
+.danger-zone {
+    border: 1px solid #ef4444;
+    background-color: rgba(239, 68, 68, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.btn-danger-outline {
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    background: transparent;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.btn-danger-outline:hover {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* Estilo para o Alerta de Sucesso (Ficar Dark também) */
+.alert-success-custom {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border-radius: 12px;
+}
+.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Modais */
+.modal-content-dark {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: #fff;
+}
+.modal-header-dark,
+.modal-footer-dark {
+    border-color: #333;
+}

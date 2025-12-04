@@ -12,4 +12,6 @@ urlpatterns = [
     path('register/client', views.registerClient, name='registerClient'),
     path('register/barber', views.registerBarber, name='registerBarber'),
     path('api/register-barbershop/', views.registerBarbershopApi, name='registerBarbershopApi'),
+    path('profile/', views.profile_view, name='profile'),
+    path('profile/delete/', views.delete_account_view, name='delete_account'),
 ]
