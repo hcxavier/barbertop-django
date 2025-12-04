@@ -33,6 +33,7 @@
                 data-shop-description="{{booking.service.barbershop.description}}"
                 data-status="{{booking.status}}"
                 data-status-display="{{booking.get_status_display}}"
+                data-can-cancel="{{ booking.can_cancel|yesno:'true,false' }}"
                 data-cancel-url="{% url 'bookings:booking_cancel' booking.id %}"
             >
                 <div>
@@ -76,6 +77,7 @@
                 data-shop-description="{{booking.service.barbershop.description}}"
                 data-status="{{booking.status}}"
                 data-status-display="{{booking.get_status_display}}"
+                data-can-cancel="{{ booking.can_cancel|yesno:'true,false' }}"
                 data-cancel-url="{% url 'bookings:booking_cancel' booking.id %}"
             >
                 <div>
@@ -190,19 +192,59 @@
                         </div>
                     </div>
 
-                    <form
-                        id="detail-cancel-form"
-                        action="{% url 'bookings:booking_cancel' selected_booking.id %}"
-                        method="POST"
-                        onsubmit="return confirm('Tem certeza que deseja cancelar?');"
-                        style="display: {% if selected_booking.status == 'CONFIRMADO' %}block{% else %}none{% endif %};"
+                    <button
+                        id="cancel-trigger-btn"
+                        type="button"
+                        class="btn btn-cancel w-100 mt-3"
+                        data-bs-toggle="modal"
+                        data-bs-target="#cancelBookingModal"
+                        style="display: {% if selected_booking.status == 'CONFIRMADO' and selected_booking.can_cancel %}block{% else %}none{% endif %};"
                     >
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-cancel w-100 mt-3">Cancelar Reserva</button>
-                    </form>
+                        Cancelar Reserva
+                    </button>
                 </div>
             </div>
             {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cancelamento -->
+<div
+    class="modal fade"
+    id="cancelBookingModal"
+    tabindex="-1"
+    aria-labelledby="cancelBookingModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header modal-header-dark">
+                <h5 class="modal-title text-danger fw-bold" id="cancelBookingModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Cancelar Reserva
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-1">Tem certeza que deseja cancelar sua reserva?</p>
+                <small class="text-muted">Esta ação não poderá ser desfeita.</small>
+            </div>
+            <div class="modal-footer modal-footer-dark">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                <form
+                    id="detail-cancel-form"
+                    action="{% if selected_booking %}{% url 'bookings:booking_cancel' selected_booking.id %}{% endif %}"
+                    method="POST"
+                >
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger fw-bold">Confirmar Cancelamento</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

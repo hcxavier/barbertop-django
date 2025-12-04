@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
 class Booking(models.Model):
     
@@ -33,6 +35,10 @@ class Booking(models.Model):
     
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
+
+    @property
+    def can_cancel(self):
+        return timezone.now() < (self.schedule - timedelta(hours=24))
 
     def __str__(self):
         return f"Agendamento para {self.customer.username} em {self.schedule.strftime('%d/%m/%Y %H:%M')}"

@@ -32,13 +32,17 @@ function selectBooking(element) {
         statusBadge.classList.add("badge-finished");
     }
 
-    // Cancel Form
+    // Cancel Form & Trigger Button
+    const cancelTriggerBtn = document.getElementById("cancel-trigger-btn");
     const cancelForm = document.getElementById("detail-cancel-form");
-    if (status === "CONFIRMADO") {
-        cancelForm.style.display = "block";
+    
+    const canCancel = element.dataset.canCancel === 'true';
+
+    if (status === "CONFIRMADO" && canCancel) {
+        cancelTriggerBtn.style.display = "block";
         cancelForm.action = element.dataset.cancelUrl;
     } else {
-        cancelForm.style.display = "none";
+        cancelTriggerBtn.style.display = "none";
     }
 }
 

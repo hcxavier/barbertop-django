@@ -68,6 +68,10 @@ def booking_cancel(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, customer=request.user)
     
     if request.method == 'POST':
+        if not booking.can_cancel:
+            messages.error(request, 'Não é possível cancelar agendamentos com menos de 24h de antecedência.')
+            return redirect('bookings:booking_list', user_id=request.user.id)
+
         # Em vez de soft delete, vamos fazer delete real para contar como CRUD Delete
         booking.delete()
         messages.success(request, 'Agendamento cancelado/removido com sucesso!')
