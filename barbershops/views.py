@@ -506,6 +506,7 @@ def barbershop_detail(request, slug):
     barbershop = get_object_or_404(Barbershop, slug=slug)
     services = barbershop.services.all()
     operations = barbershop.operations.order_by('weekDay')
+    employees = barbershop.employees.all()
     
     # Helper for display days
     days_map = {
@@ -519,5 +520,6 @@ def barbershop_detail(request, slug):
         'barbershop': barbershop,
         'services': services,
         'operations': operations,
+        'employees': employees,
     }
     return render(request, 'pages/barbershop_detail.html', context)

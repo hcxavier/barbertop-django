@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, time
 from django.http import JsonResponse
 from django.db.models import Q
 from .models import Booking
-from barbershops.models import Barbershop, BarbershopService
+from barbershops.models import Barbershop, BarbershopService, Employee
 
 @login_required
 def booking_list(request, user_id):
@@ -43,8 +43,6 @@ def get_available_times(request):
         selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         
         # Verifica se é dia de funcionamento
-        # weekday(): 0=Segunda, 6=Domingo
-        # Operation model: 0=Segunda, 6=Domingo
         week_day = selected_date.weekday()
         operation = barbershop.operations.filter(weekDay=week_day).first()
         
@@ -52,51 +50,56 @@ def get_available_times(request):
              return JsonResponse({'available_times': [], 'message': 'Fechado neste dia'})
 
         service_duration = service.duration_minutes
-        step_minutes = 30 # Intervalo visual
-
-        bookings_query = Booking.objects.filter(
-            barbershop=barbershop,
-            schedule__date=selected_date,
-            status__in=['PENDENTE', 'CONFIRMADO']
-        )
+        step_minutes = 30 
         
+        # Determine target employees
         if employee_id:
-            bookings_query = bookings_query.filter(employee_id=employee_id)
-        
-        busy_slots = []
-        for booking in bookings_query:
-            start_time = booking.schedule.time()
-            # Assumindo que booking.service sempre existe, mas por segurança:
-            duration = booking.service.duration_minutes if booking.service else 30
-            end_time_dt = booking.schedule + timedelta(minutes=duration)
-            busy_slots.append((start_time, end_time_dt.time()))
+            target_employees = [get_object_or_404(Employee, id=employee_id)]
+        else:
+            target_employees = barbershop.employees.all()
 
-        available_slots = []
-        
-        # Usar horários da operação
-        current_dt = datetime.combine(selected_date, operation.timeInitial)
-        closing_dt = datetime.combine(selected_date, operation.timeFinal)
+        final_available_slots = set()
 
-        while current_dt < closing_dt:
-            proposed_start = current_dt.time()
-            proposed_end_dt = current_dt + timedelta(minutes=service_duration)
-            proposed_end = proposed_end_dt.time()
-
-            if proposed_end_dt > closing_dt:
-                break
-
-            is_conflict = False
-            for busy_start, busy_end in busy_slots:
-                if proposed_start < busy_end and proposed_end > busy_start:
-                    is_conflict = True
-                    break
+        for emp in target_employees:
+            bookings = Booking.objects.filter(
+                barbershop=barbershop,
+                schedule__date=selected_date,
+                status__in=['PENDENTE', 'CONFIRMADO'],
+                employee=emp
+            )
             
-            if not is_conflict:
-                available_slots.append(proposed_start.strftime("%H:%M"))
+            busy_slots = []
+            for booking in bookings:
+                local_schedule = timezone.localtime(booking.schedule)
+                start_time = local_schedule.time()
+                duration = booking.service.duration_minutes if booking.service else 30
+                end_time_dt = local_schedule + timedelta(minutes=duration)
+                busy_slots.append((start_time, end_time_dt.time()))
 
-            current_dt += timedelta(minutes=step_minutes)
+            current_dt = datetime.combine(selected_date, operation.timeInitial)
+            closing_dt = datetime.combine(selected_date, operation.timeFinal)
 
-        return JsonResponse({'available_times': available_slots})
+            while current_dt < closing_dt:
+                proposed_start = current_dt.time()
+                proposed_end_dt = current_dt + timedelta(minutes=service_duration)
+                proposed_end = proposed_end_dt.time()
+
+                if proposed_end_dt > closing_dt:
+                    break
+
+                is_conflict = False
+                for busy_start, busy_end in busy_slots:
+                    if proposed_start < busy_end and proposed_end > busy_start:
+                        is_conflict = True
+                        break
+                
+                if not is_conflict:
+                    final_available_slots.add(proposed_start.strftime("%H:%M"))
+
+                current_dt += timedelta(minutes=step_minutes)
+
+        sorted_slots = sorted(list(final_available_slots))
+        return JsonResponse({'available_times': sorted_slots})
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -106,6 +109,7 @@ def booking_create(request):
     if request.method == 'POST':
         barbershop_id = request.POST.get('barbershop_id')
         service_id = request.POST.get('service_id')
+        employee_id = request.POST.get('employee_id')
         date_str = request.POST.get('date')
         time_str = request.POST.get('time')
 
@@ -116,17 +120,86 @@ def booking_create(request):
             # Combine date and time
             schedule_str = f"{date_str} {time_str}"
             schedule = datetime.strptime(schedule_str, "%Y-%m-%d %H:%M")
-            
-            # Make it timezone aware (naive datetime warning fix)
             schedule = timezone.make_aware(schedule)
+            
+            employee = None
+            if employee_id:
+                employee = get_object_or_404(Employee, id=employee_id)
+                
+                # Validate availability for the selected employee
+                cand_bookings = Booking.objects.filter(
+                    employee=employee,
+                    status__in=['PENDENTE', 'CONFIRMADO'],
+                    schedule__date=schedule.date()
+                )
+                
+                new_start = schedule
+                new_end = schedule + timedelta(minutes=service.duration_minutes)
+                
+                for b in cand_bookings:
+                    b_duration = b.service.duration_minutes if b.service else 30
+                    b_start = b.schedule
+                    b_end = b.schedule + timedelta(minutes=b_duration)
+                    
+                    if new_start < b_end and new_end > b_start:
+                        messages.error(request, 'Este horário já foi reservado por outro cliente. Por favor, escolha outro horário.')
+                        return redirect('barbershops:barbershop_detail', slug=barbershop.slug)
+            else:
+                # Auto-assign: Find first available employee
+                candidates = barbershop.employees.all()
+                for cand in candidates:
+                    # Check conflicts for this candidate
+                    is_busy = Booking.objects.filter(
+                        employee=cand,
+                        status__in=['PENDENTE', 'CONFIRMADO'],
+                        schedule__lt=schedule + timedelta(minutes=service.duration_minutes),
+                        schedule__gt=schedule - timedelta(minutes=30) # Approximate check, better to be precise
+                    ).exists()
+                    
+                    # Precise check
+                    # Any booking that overlaps with [schedule, schedule + service_duration]
+                    # Overlap condition: Not (EndA <= StartB or StartA >= EndB)
+                    # Here B is the new booking. A is existing.
+                    # Existing booking A: [A_start, A_end]
+                    # New booking B: [schedule, schedule + duration]
+                    
+                    # Simplified query:
+                    # Get all bookings for cand around that time
+                    cand_bookings = Booking.objects.filter(
+                        employee=cand,
+                        status__in=['PENDENTE', 'CONFIRMADO'],
+                        schedule__date=schedule.date()
+                    )
+                    
+                    conflict = False
+                    new_start = schedule
+                    new_end = schedule + timedelta(minutes=service.duration_minutes)
+                    
+                    for b in cand_bookings:
+                        b_duration = b.service.duration_minutes if b.service else 30
+                        b_start = b.schedule
+                        b_end = b.schedule + timedelta(minutes=b_duration)
+                        
+                        if new_start < b_end and new_end > b_start:
+                            conflict = True
+                            break
+                    
+                    if not conflict:
+                        employee = cand
+                        break
+                
+                if not employee:
+                    messages.error(request, 'Nenhum profissional disponível neste horário.')
+                    return redirect('bookings:booking_list', user_id=request.user.id)
 
             # Create booking
             Booking.objects.create(
                 customer=request.user,
                 barbershop=barbershop,
                 service=service,
+                employee=employee,
                 schedule=schedule,
-                status='CONFIRMADO' # Auto confirm for MVP or 'PENDENTE'
+                status='CONFIRMADO' 
             )
             
             messages.success(request, 'Agendamento realizado com sucesso!')

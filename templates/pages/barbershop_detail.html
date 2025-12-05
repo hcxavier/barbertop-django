@@ -146,6 +146,16 @@
             </div>
 
             <div class="mb-3">
+                <label for="employeeSelect" class="form-label text-muted small text-uppercase fw-bold">Profissional (Opcional)</label>
+                <select class="form-select bg-dark text-white border-secondary" id="employeeSelect" name="employee_id">
+                    <option value="" selected>Qualquer profissional</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.id }}">{{ employee.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label for="bookingDate" class="form-label text-muted small text-uppercase fw-bold">Data</label>
                 <input type="date" class="form-control bg-dark text-white border-secondary" id="bookingDate" name="date" required>
             </div>
@@ -176,6 +186,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const bookingModal = document.getElementById('bookingModal');
         const bookingDateInput = document.getElementById('bookingDate');
+        const employeeSelect = document.getElementById('employeeSelect');
         const timeSlotsContainer = document.getElementById('timeSlots');
         const selectedTimeInput = document.getElementById('selectedTime');
         const btnConfirmBooking = document.getElementById('btnConfirmBooking');
@@ -193,22 +204,32 @@
             
             // Reset fields
             bookingDateInput.value = '';
+            employeeSelect.value = '';
             selectedTimeInput.value = '';
             timeSlotsContainer.innerHTML = '<span class="text-muted small fst-italic">Selecione uma data para ver os horários.</span>';
             btnConfirmBooking.disabled = true;
         });
 
-        // Fetch Available Times
-        bookingDateInput.addEventListener('change', function() {
-            const date = this.value;
+        function fetchAvailableTimes() {
+            const date = bookingDateInput.value;
             const serviceId = document.getElementById('modalServiceId').value;
+            const employeeId = employeeSelect.value;
             const barbershopId = "{{ barbershop.id }}";
             
             if (!date) return;
 
             timeSlotsContainer.innerHTML = '<div class="spinner-border spinner-border-sm text-light" role="status"></div> Carregando...';
+            
+            // Reset selected time
+            selectedTimeInput.value = '';
+            btnConfirmBooking.disabled = true;
 
-            fetch(`/bookings/api/available-times/?barbershop_id=${barbershopId}&service_id=${serviceId}&date=${date}`)
+            let url = `/bookings/api/available-times/?barbershop_id=${barbershopId}&service_id=${serviceId}&date=${date}`;
+            if (employeeId) {
+                url += `&employee_id=${employeeId}`;
+            }
+
+            fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     timeSlotsContainer.innerHTML = '';
@@ -254,7 +275,13 @@
                     console.error(err);
                     timeSlotsContainer.innerHTML = '<span class="text-danger small">Erro ao carregar horários.</span>';
                 });
-        });
+        }
+
+        // Fetch Available Times on Date Change
+        bookingDateInput.addEventListener('change', fetchAvailableTimes);
+        
+        // Fetch Available Times on Employee Change (if date is selected)
+        employeeSelect.addEventListener('change', fetchAvailableTimes);
     });
 </script>
 {% endblock %}
