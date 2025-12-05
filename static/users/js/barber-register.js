@@ -1,3 +1,5 @@
+let employeesList = [];
+
 function toggleFuncionarioBtn() {
     const chk = document.getElementById("trabalhoSozinho");
     const btn = document.getElementById("btnAddFuncionario");
@@ -76,35 +78,58 @@ function removerItem(botao) {
     }
 }
 
+function renderEmployees() {
+    const lista = document.getElementById("listaFuncionarios");
+    lista.innerHTML = "";
+    
+    if (employeesList.length === 0) {
+        document.getElementById("avisoFuncionarioVazio").style.display = "block";
+        return;
+    }
+    
+    document.getElementById("avisoFuncionarioVazio").style.display = "none";
+
+    employeesList.forEach((emp, index) => {
+        const novoFuncionarioHTML = `
+            <div class="item-funcionario d-flex justify-content-between align-items-center p-3 rounded-3" 
+                 style="background-color: #27272a;">
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-dark text-secondary overflow-hidden" style="width: 40px; height: 40px;">
+                        ${ emp.file ? `<img src="${URL.createObjectURL(emp.file)}" style="width: 100%; height: 100%; object-fit: cover;">` : `<i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>` }
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold text-white">${emp.name}</h6>
+                        <small class="text-muted">${emp.file ? 'Com foto' : 'Sem foto'}</small>
+                    </div>
+                </div>
+                <button class="btn btn-sm text-danger" onclick="removerFuncionario(${index})"><i class="bi bi-trash"></i></button>
+            </div>`;
+        lista.insertAdjacentHTML("beforeend", novoFuncionarioHTML);
+    });
+}
+
 function salvarFuncionario() {
     const nome = document.getElementById("nomeFuncionario").value;
+    const fileInput = document.getElementById("fotoFuncionario");
+    
     if (nome === "") {
         alert("Digite o nome!");
         return;
     }
 
-    document.getElementById("avisoFuncionarioVazio").style.display = "none";
+    const file = fileInput.files.length > 0 ? fileInput.files[0] : null;
+    
+    employeesList.push({
+        name: nome,
+        file: file
+    });
 
-    const novoFuncionarioHTML = `
-                <div class="item-funcionario d-flex justify-content-between align-items-center p-3 rounded-3" 
-                     style="background-color: #27272a;" data-nome="${nome}">
-                    <div class="d-flex gap-3 align-items-center">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-dark text-secondary" style="width: 40px; height: 40px; font-size: 1.5rem;">
-                            <i class="bi bi-person-circle"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0 fw-bold text-white">${nome}</h6>
-                            <small class="text-muted">Profissional</small>
-                        </div>
-                    </div>
-                    <button class="btn btn-sm text-danger" onclick="removerFuncionario(this)"><i class="bi bi-trash"></i></button>
-                </div>`;
-
-    document.getElementById("listaFuncionarios").insertAdjacentHTML("beforeend", novoFuncionarioHTML);
+    renderEmployees();
     bootstrap.Modal.getInstance(document.getElementById("modalFuncionario")).hide();
     document.getElementById("formFuncionario").reset();
 }
 
-function removerFuncionario(botao) {
-    botao.closest(".d-flex").remove();
+function removerFuncionario(index) {
+    employeesList.splice(index, 1);
+    renderEmployees();
 }

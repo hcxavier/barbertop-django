@@ -135,13 +135,20 @@ async function finalizarCadastro() {
     });
     formData.append("services", JSON.stringify(listaServicos));
 
-    let listaEquipe = [];
+    // Employees - Using the global employeesList from barber-register.js
+    let listaEquipeNames = [];
     if (!document.getElementById("trabalhoSozinho").checked) {
-        document.querySelectorAll(".item-funcionario").forEach((el) => {
-            listaEquipe.push({ nome: el.dataset.nome });
-        });
+        // Check if employeesList is defined (it should be in barber-register.js)
+        if (typeof employeesList !== 'undefined') {
+            employeesList.forEach((emp, index) => {
+                listaEquipeNames.push({ nome: emp.name });
+                if (emp.file) {
+                    formData.append(`employee_photo_${index}`, emp.file);
+                }
+            });
+        }
     }
-    formData.append("employees", JSON.stringify(listaEquipe));
+    formData.append("employees", JSON.stringify(listaEquipeNames));
 
     // 4. Fetch
     const URL = "/users/api/register-barbershop/";

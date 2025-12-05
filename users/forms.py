@@ -148,8 +148,8 @@ class BarbershopSignUpForm(UserCreationForm):
             address=address,
             name=self.cleaned_data['shop_name'],
             description=self.cleaned_data.get('description', ''),
-            telephone=self.cleaned_data['telephone']
-            # imageUrl=self.cleaned_data.get('profile_image') 
+            telephone=self.cleaned_data['telephone'],
+            imageUrl=self.cleaned_data.get('profile_image')
         )
 
         # 4. Processa os SERVIÇOS (JSON)
@@ -172,11 +172,15 @@ class BarbershopSignUpForm(UserCreationForm):
         if employees_data:
             try:
                 items = json.loads(employees_data)
-                for item in items:
+                for index, item in enumerate(items):
+                    # Check for file in self.files (which contains request.FILES)
+                    file_key = f'employee_photo_{index}'
+                    photo = self.files.get(file_key)
+                    
                     Employee.objects.create(
                         barbershop=barbershop,
-                        name=item['nome']
-                        # Se tiver foto do funcionário, trataria aqui
+                        name=item['nome'],
+                        urlProfilePhoto=photo # Save the file if it exists
                     )
             except Exception as e:
                 print(f"Erro ao salvar equipe: {e}")
