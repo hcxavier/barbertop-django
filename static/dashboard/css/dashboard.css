@@ -246,27 +246,77 @@ body {
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
+    width: 260px; /* Keep fixed width even on mobile */
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translateX(-100%); /* Hide off-screen */
+    transition: transform 0.3s ease-in-out;
+    z-index: 1050; /* Higher than overlay */
+    padding: 2rem 1.5rem;
+    flex-direction: column; /* Restore column layout */
+    justify-content: flex-start;
+    align-items: stretch;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.5);
+  }
+
+  .sidebar.show {
+    transform: translateX(0); /* Slide in */
   }
 
   .sidebar nav {
-    display: none;
+    display: flex; /* Restore nav visibility */
   }
 
   .main-content {
     margin-left: 0;
     padding: 1rem;
+    padding-top: 5rem; /* Space for mobile header */
   }
 
   .top-bar {
-    display: none;
+    display: none; /* Keep hiding top-bar, we will add a mobile header */
   }
+  
+  /* Mobile Header */
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1040;
+  }
+  
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1045;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .mobile-overlay.show {
+    display: block;
+    opacity: 1;
+  }
+}
+
+@media (min-width: 769px) {
+    .mobile-header, .mobile-overlay, .sidebar-close-btn {
+        display: none !important;
+    }
 }
 
 /* --- Select Filter Custom Style --- */
