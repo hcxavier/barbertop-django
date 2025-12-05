@@ -192,5 +192,47 @@
         </div>
     </div>
 
+    <!-- Zona de Perigo -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="custom-card border-danger" style="background-color: rgba(239, 68, 68, 0.05);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold text-danger mb-1">Zona de Perigo</h5>
+                        <p class="text-muted small mb-0">A exclusão da conta é permanente e removerá todos os dados da barbearia.</p>
+                    </div>
+                    <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteBarbershopModal">
+                        Excluir Conta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Excluir Conta -->
+    <div class="modal fade" id="deleteBarbershopModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #18181b; border: 1px solid #ef4444; color: #e1e1e6;">
+                <div class="modal-header border-secondary" style="border-color: #29292e !important;">
+                    <h5 class="modal-title fw-bold text-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Excluir Conta Permanentemente
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <p class="fs-5 mb-3">Tem certeza absoluta?</p>
+                    <p class="text-muted mb-0">Esta ação excluirá sua conta de usuário, sua barbearia, agendamentos e todos os dados associados. <strong>Não é possível desfazer.</strong></p>
+                </div>
+                <div class="modal-footer border-secondary" style="border-color: #29292e !important;">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="{% url 'barbershops:barbershop_delete' %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger fw-bold">Sim, Excluir Tudo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 {% endblock %}

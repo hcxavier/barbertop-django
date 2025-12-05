@@ -20,6 +20,7 @@ urlpatterns = [
     path('schedule/<int:operation_id>/delete/', views.schedule_delete, name='schedule_delete'),
 
     path('settings/', views.settings_manage, name='settings_manage'),
+    path('delete_account/', views.barbershop_delete, name='barbershop_delete'),
     path('rate/', views.rate_barbershop, name='rate_barbershop'),
     path('rating/<int:rating_id>/delete/', views.delete_rating, name='delete_rating'),
     path('<slug:slug>/', views.barbershop_detail, name='barbershop_detail'),

@@ -614,3 +614,16 @@ def delete_rating(request, rating_id):
     messages.success(request, 'Avaliação excluída com sucesso!')
     
     return redirect('barbershops:barbershop_detail', slug=barbershop_slug)
+
+@user_passes_test(is_barbershop_owner)
+def barbershop_delete(request):
+    if request.method == 'POST':
+        user = request.user
+        try:
+            user.delete()
+            return redirect('home')
+        except Exception as e:
+            messages.error(request, f'Erro ao excluir conta: {str(e)}')
+            return redirect('barbershops:settings_manage')
+            
+    return redirect('barbershops:settings_manage')
