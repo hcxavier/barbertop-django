@@ -28,15 +28,6 @@ def booking_list(request, user_id):
         selected_booking = None
     return render(request, 'pages/bookings/booking_list.html', {'user_id': user_id, 'bookings_confirmed': bookings_confirmed, 'bookings_finished': bookings_finished, 'selected_booking': selected_booking  })
 
-def _ensure_employee_exists(barbershop):
-    if not barbershop.employees.exists() and barbershop.owner:
-        owner_name = barbershop.owner.get_full_name() or barbershop.owner.username or "Profissional Principal"
-        return Employee.objects.create(
-            barbershop=barbershop,
-            name=owner_name
-        )
-    return None
-
 def get_available_times(request):
     barbershop_id = request.GET.get('barbershop_id')
     employee_id = request.GET.get('employee_id')
@@ -48,9 +39,6 @@ def get_available_times(request):
 
     try:
         barbershop = Barbershop.objects.get(id=barbershop_id)
-        
-        _ensure_employee_exists(barbershop)
-        
         service = BarbershopService.objects.get(id=service_id)
         selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         
@@ -64,20 +52,17 @@ def get_available_times(request):
         service_duration = service.duration_minutes
         step_minutes = 30 
         
-        # Determine target employees
-        if employee_id:
-            target_employees = [get_object_or_404(Employee, id=employee_id)]
-        else:
-            target_employees = barbershop.employees.all()
-
         final_available_slots = set()
-
-        for emp in target_employees:
+        
+        # Se não tem funcionários cadastrados, considera a barbearia como um recurso único (Dono)
+        has_employees = barbershop.employees.exists()
+        
+        if not has_employees:
+            # Checa disponibilidade global da barbearia (apenas 1 atendimento por vez)
             bookings = Booking.objects.filter(
                 barbershop=barbershop,
                 schedule__date=selected_date,
-                status__in=['PENDENTE', 'CONFIRMADO'],
-                employee=emp
+                status__in=['PENDENTE', 'CONFIRMADO']
             )
             
             busy_slots = []
@@ -109,6 +94,51 @@ def get_available_times(request):
                     final_available_slots.add(proposed_start.strftime("%H:%M"))
 
                 current_dt += timedelta(minutes=step_minutes)
+        
+        else:
+            # Determine target employees
+            if employee_id:
+                target_employees = [get_object_or_404(Employee, id=employee_id)]
+            else:
+                target_employees = barbershop.employees.all()
+
+            for emp in target_employees:
+                bookings = Booking.objects.filter(
+                    barbershop=barbershop,
+                    schedule__date=selected_date,
+                    status__in=['PENDENTE', 'CONFIRMADO'],
+                    employee=emp
+                )
+                
+                busy_slots = []
+                for booking in bookings:
+                    local_schedule = timezone.localtime(booking.schedule)
+                    start_time = local_schedule.time()
+                    duration = booking.service.duration_minutes if booking.service else 30
+                    end_time_dt = local_schedule + timedelta(minutes=duration)
+                    busy_slots.append((start_time, end_time_dt.time()))
+
+                current_dt = datetime.combine(selected_date, operation.timeInitial)
+                closing_dt = datetime.combine(selected_date, operation.timeFinal)
+
+                while current_dt < closing_dt:
+                    proposed_start = current_dt.time()
+                    proposed_end_dt = current_dt + timedelta(minutes=service_duration)
+                    proposed_end = proposed_end_dt.time()
+
+                    if proposed_end_dt > closing_dt:
+                        break
+
+                    is_conflict = False
+                    for busy_start, busy_end in busy_slots:
+                        if proposed_start < busy_end and proposed_end > busy_start:
+                            is_conflict = True
+                            break
+                    
+                    if not is_conflict:
+                        final_available_slots.add(proposed_start.strftime("%H:%M"))
+
+                    current_dt += timedelta(minutes=step_minutes)
 
         sorted_slots = sorted(list(final_available_slots))
         return JsonResponse({'available_times': sorted_slots})
@@ -127,9 +157,6 @@ def booking_create(request):
 
         try:
             barbershop = get_object_or_404(Barbershop, id=barbershop_id)
-            
-            _ensure_employee_exists(barbershop)
-            
             service = get_object_or_404(BarbershopService, id=service_id)
             
             # Combine date and time
@@ -138,10 +165,34 @@ def booking_create(request):
             schedule = timezone.make_aware(schedule)
             
             employee = None
-            if employee_id:
+            
+            # Check if barbershop has employees
+            has_employees = barbershop.employees.exists()
+            
+            if not has_employees:
+                # Logic for owner working alone (no employee record)
+                bookings = Booking.objects.filter(
+                    barbershop=barbershop,
+                    status__in=['PENDENTE', 'CONFIRMADO'],
+                    schedule__date=schedule.date()
+                )
+                
+                new_start = schedule
+                new_end = schedule + timedelta(minutes=service.duration_minutes)
+                
+                for b in bookings:
+                    b_duration = b.service.duration_minutes if b.service else 30
+                    b_start = b.schedule
+                    b_end = b.schedule + timedelta(minutes=b_duration)
+                    
+                    if new_start < b_end and new_end > b_start:
+                        messages.error(request, 'Este horário já foi reservado. Por favor, escolha outro horário.')
+                        return redirect('barbershops:barbershop_detail', slug=barbershop.slug)
+                        
+            elif employee_id:
+                # Logic for specific employee selected
                 employee = get_object_or_404(Employee, id=employee_id)
                 
-                # Validate availability for the selected employee
                 cand_bookings = Booking.objects.filter(
                     employee=employee,
                     status__in=['PENDENTE', 'CONFIRMADO'],
@@ -160,16 +211,9 @@ def booking_create(request):
                         messages.error(request, 'Este horário já foi reservado por outro cliente. Por favor, escolha outro horário.')
                         return redirect('barbershops:barbershop_detail', slug=barbershop.slug)
             else:
+                # Auto-assign logic if employees exist but none selected
                 candidates = barbershop.employees.all()
                 for cand in candidates:
-                    # Check conflicts for this candidate
-                    is_busy = Booking.objects.filter(
-                        employee=cand,
-                        status__in=['PENDENTE', 'CONFIRMADO'],
-                        schedule__lt=schedule + timedelta(minutes=service.duration_minutes),
-                        schedule__gt=schedule - timedelta(minutes=30) # Approximate check, better to be precise
-                    ).exists()
-                    
                     cand_bookings = Booking.objects.filter(
                         employee=cand,
                         status__in=['PENDENTE', 'CONFIRMADO'],

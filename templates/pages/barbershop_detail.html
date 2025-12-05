@@ -220,6 +220,7 @@
                 </div>
             </div>
 
+            {% if employees %}
             <div class="mb-3">
                 <label for="employeeSelect" class="form-label text-muted small text-uppercase fw-bold">Profissional (Opcional)</label>
                 <select class="form-select bg-dark text-white border-secondary" id="employeeSelect" name="employee_id">
@@ -229,6 +230,10 @@
                     {% endfor %}
                 </select>
             </div>
+            {% else %}
+            <!-- Hidden input to prevent JS error, or handle in JS -->
+            <input type="hidden" id="employeeSelect" name="employee_id" value="">
+            {% endif %}
 
             <div class="mb-3">
                 <label for="bookingDate" class="form-label text-muted small text-uppercase fw-bold">Data</label>
