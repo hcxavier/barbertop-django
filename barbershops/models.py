@@ -17,7 +17,7 @@ class Address(models.Model):
         verbose_name_plural = "Endereços"
 
     def __str__(self):
-        return f"{self.street}, {self.number} - {self.city}"
+        return f"{self.street} - {self.neighbourhood}, {self.number} - {self.city}"
 
 class Barbershop(models.Model):
     owner = models.OneToOneField(

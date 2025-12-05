@@ -131,9 +131,6 @@
                 <!-- All Ratings List -->
                 <div class="ratings-list">
                     {% for rating in ratings %}
-                        <!-- Skip user's own ratings in the general list to avoid duplication, or keep them? 
-                             Usually better to show all here, but maybe highlight. 
-                             Let's show all, but if it's the user's, we mark it. -->
                         {% if rating.customer != request.user %}
                         <div class="d-flex gap-3 mb-4">
                             <div class="avatar-circle bg-dark border border-secondary text-muted d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; min-width: 40px;">
@@ -222,13 +219,30 @@
 
             {% if employees %}
             <div class="mb-3">
-                <label for="employeeSelect" class="form-label text-muted small text-uppercase fw-bold">Profissional (Opcional)</label>
-                <select class="form-select bg-dark text-white border-secondary" id="employeeSelect" name="employee_id">
-                    <option value="" selected>Qualquer profissional</option>
+                <label class="form-label text-muted small text-uppercase fw-bold">Profissional (Opcional)</label>
+                <div class="employee-grid">
+                    <!-- Option: Any Professional -->
+                    <div class="employee-card selected" data-employee-id="">
+                        <div class="employee-avatar bg-secondary d-flex align-items-center justify-content-center mx-auto">
+                            <i class="bi bi-people-fill text-white"></i>
+                        </div>
+                        <div class="employee-name">Qualquer</div>
+                    </div>
+
                     {% for employee in employees %}
-                    <option value="{{ employee.id }}">{{ employee.name }}</option>
+                    <div class="employee-card" data-employee-id="{{ employee.id }}">
+                        {% if employee.urlProfilePhoto %}
+                            <img src="{{ employee.urlProfilePhoto.url }}" alt="{{ employee.name }}" class="employee-avatar mx-auto d-block">
+                        {% else %}
+                            <div class="employee-avatar bg-dark border border-secondary d-flex align-items-center justify-content-center mx-auto">
+                                <i class="bi bi-person-fill text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div class="employee-name">{{ employee.name }}</div>
+                    </div>
                     {% endfor %}
-                </select>
+                </div>
+                <input type="hidden" id="employeeSelect" name="employee_id" value="">
             </div>
             {% else %}
             <!-- Hidden input to prevent JS error, or handle in JS -->
@@ -284,10 +298,35 @@
             
             // Reset fields
             bookingDateInput.value = '';
-            employeeSelect.value = '';
+            
+            // Reset employee selection visually and value
+            employeeSelect.value = ''; 
+            const cards = document.querySelectorAll('.employee-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            const firstCard = document.querySelector('.employee-card[data-employee-id=""]');
+            if(firstCard) firstCard.classList.add('selected');
+
             selectedTimeInput.value = '';
             timeSlotsContainer.innerHTML = '<span class="text-muted small fst-italic">Selecione uma data para ver os horários.</span>';
             btnConfirmBooking.disabled = true;
+        });
+
+        // Employee Card Selection Logic
+        const employeeCards = document.querySelectorAll('.employee-card');
+        employeeCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected from all
+                employeeCards.forEach(c => c.classList.remove('selected'));
+                // Add to clicked
+                this.classList.add('selected');
+                
+                // Update hidden input
+                const empId = this.getAttribute('data-employee-id');
+                employeeSelect.value = empId;
+                
+                // Fetch times
+                fetchAvailableTimes();
+            });
         });
 
         function fetchAvailableTimes() {
@@ -360,8 +399,7 @@
         // Fetch Available Times on Date Change
         bookingDateInput.addEventListener('change', fetchAvailableTimes);
         
-        // Fetch Available Times on Employee Change (if date is selected)
-        employeeSelect.addEventListener('change', fetchAvailableTimes);
+        // No longer need 'change' listener on employeeSelect because we handle clicks manually
     });
 </script>
 {% endblock %}
