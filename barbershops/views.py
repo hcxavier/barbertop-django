@@ -492,3 +492,23 @@ def rate_barbershop(request):
             messages.error(request, 'Erro ao enviar avaliação. Verifique os dados.')
             
     return redirect('bookings:booking_list', user_id=request.user.id)
+
+def barbershop_detail(request, slug):
+    barbershop = get_object_or_404(Barbershop, slug=slug)
+    services = barbershop.services.all()
+    operations = barbershop.operations.order_by('weekDay')
+    
+    # Helper for display days
+    days_map = {
+        0: 'Segunda-feira', 1: 'Terça-feira', 2: 'Quarta-feira',
+        3: 'Quinta-feira', 4: 'Sexta-feira', 5: 'Sábado', 6: 'Domingo'
+    }
+    for op in operations:
+        op.day_display = days_map.get(op.weekDay, 'Dia desconhecido')
+
+    context = {
+        'barbershop': barbershop,
+        'services': services,
+        'operations': operations,
+    }
+    return render(request, 'pages/barbershop_detail.html', context)

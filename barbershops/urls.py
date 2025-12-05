@@ -21,4 +21,5 @@ urlpatterns = [
 
     path('settings/', views.settings_manage, name='settings_manage'),
     path('rate/', views.rate_barbershop, name='rate_barbershop'),
+    path('<slug:slug>/', views.barbershop_detail, name='barbershop_detail'),
 ]
