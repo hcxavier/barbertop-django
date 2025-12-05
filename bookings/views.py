@@ -28,6 +28,19 @@ def booking_list(request, user_id):
         selected_booking = None
     return render(request, 'pages/bookings/booking_list.html', {'user_id': user_id, 'bookings_confirmed': bookings_confirmed, 'bookings_finished': bookings_finished, 'selected_booking': selected_booking  })
 
+def _ensure_employee_exists(barbershop):
+    """
+    Helper to ensure at least one employee exists.
+    If none, creates one based on the owner.
+    """
+    if not barbershop.employees.exists() and barbershop.owner:
+        owner_name = barbershop.owner.get_full_name() or barbershop.owner.username or "Profissional Principal"
+        return Employee.objects.create(
+            barbershop=barbershop,
+            name=owner_name
+        )
+    return None
+
 def get_available_times(request):
     barbershop_id = request.GET.get('barbershop_id')
     employee_id = request.GET.get('employee_id')
@@ -39,6 +52,10 @@ def get_available_times(request):
 
     try:
         barbershop = Barbershop.objects.get(id=barbershop_id)
+        
+        # Auto-create owner employee if shop has no employees
+        _ensure_employee_exists(barbershop)
+        
         service = BarbershopService.objects.get(id=service_id)
         selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         
@@ -115,6 +132,10 @@ def booking_create(request):
 
         try:
             barbershop = get_object_or_404(Barbershop, id=barbershop_id)
+            
+            # Auto-create owner employee if needed (safety check)
+            _ensure_employee_exists(barbershop)
+            
             service = get_object_or_404(BarbershopService, id=service_id)
             
             # Combine date and time
