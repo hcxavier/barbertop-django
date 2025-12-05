@@ -76,6 +76,7 @@ class BarbershopService(models.Model):
     description = models.TextField(blank=True, null=True)
     imageUrl = models.ImageField(upload_to='services/', blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2) # Decimal
+    duration_minutes = models.IntegerField(default=30, verbose_name="Duração (min)")
     barbershop = models.ForeignKey(Barbershop, on_delete=models.CASCADE, related_name="services")
     
     def __str__(self):

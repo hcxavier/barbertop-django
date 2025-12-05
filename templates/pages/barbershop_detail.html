@@ -68,8 +68,17 @@
                     
                     <div class="text-end" style="min-width: 100px;">
                         <div class="service-price">R$ {{ service.price }}</div>
-                        <!-- Botão Reservar (Por enquanto sem link funcional para agendamento) -->
-                        <a href="#" class="btn btn-sm btn-primary" style="background-color: #27272a; border-color: #3f3f46;">Reservar</a>
+                        <!-- Botão Reservar -->
+                        <button type="button" 
+                                class="btn btn-sm btn-primary fw-bold" 
+                                style="background-color: #a855f7; border: none;"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#bookingModal"
+                                data-service-id="{{ service.id }}"
+                                data-service-name="{{ service.name }}"
+                                data-service-price="{{ service.price }}">
+                            Reservar
+                        </button>
                     </div>
                 </div>
                 {% empty %}
@@ -112,4 +121,138 @@
         </div>
     </div>
 </div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background-color: #1a1a1a; color: white; border: 1px solid #333;">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title fw-bold" id="bookingModalLabel">Fazer Reserva</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="bookingForm" action="{% url 'bookings:booking_create' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="barbershop_id" value="{{ barbershop.id }}">
+            <input type="hidden" name="service_id" id="modalServiceId">
+            
+            <div class="p-3 mb-3 rounded" style="background-color: #27272a;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 id="modalServiceName" class="fw-bold mb-0 text-white"></h6>
+                    <span id="modalServicePrice" class="fw-bold" style="color: #a855f7;"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="bookingDate" class="form-label text-muted small text-uppercase fw-bold">Data</label>
+                <input type="date" class="form-control bg-dark text-white border-secondary" id="bookingDate" name="date" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label text-muted small text-uppercase fw-bold">Horários Disponíveis</label>
+                <div id="timeSlots" class="d-flex flex-wrap gap-2">
+                    <span class="text-muted small fst-italic">Selecione uma data para ver os horários.</span>
+                </div>
+                <input type="hidden" name="time" id="selectedTime" required>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn fw-bold py-2" style="background-color: #a855f7; color: white; border: none;" disabled id="btnConfirmBooking">
+                    Confirmar Reserva
+                </button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bookingModal = document.getElementById('bookingModal');
+        const bookingDateInput = document.getElementById('bookingDate');
+        const timeSlotsContainer = document.getElementById('timeSlots');
+        const selectedTimeInput = document.getElementById('selectedTime');
+        const btnConfirmBooking = document.getElementById('btnConfirmBooking');
+        
+        // Populate Modal Data
+        bookingModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const serviceId = button.getAttribute('data-service-id');
+            const serviceName = button.getAttribute('data-service-name');
+            const servicePrice = button.getAttribute('data-service-price');
+            
+            document.getElementById('modalServiceId').value = serviceId;
+            document.getElementById('modalServiceName').textContent = serviceName;
+            document.getElementById('modalServicePrice').textContent = 'R$ ' + servicePrice;
+            
+            // Reset fields
+            bookingDateInput.value = '';
+            selectedTimeInput.value = '';
+            timeSlotsContainer.innerHTML = '<span class="text-muted small fst-italic">Selecione uma data para ver os horários.</span>';
+            btnConfirmBooking.disabled = true;
+        });
+
+        // Fetch Available Times
+        bookingDateInput.addEventListener('change', function() {
+            const date = this.value;
+            const serviceId = document.getElementById('modalServiceId').value;
+            const barbershopId = "{{ barbershop.id }}";
+            
+            if (!date) return;
+
+            timeSlotsContainer.innerHTML = '<div class="spinner-border spinner-border-sm text-light" role="status"></div> Carregando...';
+
+            fetch(`/bookings/api/available-times/?barbershop_id=${barbershopId}&service_id=${serviceId}&date=${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    timeSlotsContainer.innerHTML = '';
+                    
+                    if (data.error) {
+                        timeSlotsContainer.innerHTML = `<span class="text-danger small">${data.error}</span>`;
+                        return;
+                    }
+                    
+                    if (data.available_times && data.available_times.length > 0) {
+                        data.available_times.forEach(time => {
+                            const badge = document.createElement('button');
+                            badge.type = 'button';
+                            badge.className = 'btn btn-outline-secondary btn-sm text-white border-secondary';
+                            badge.textContent = time;
+                            badge.style.minWidth = '60px';
+                            
+                            badge.addEventListener('click', function() {
+                                // Remove active class from siblings
+                                Array.from(timeSlotsContainer.children).forEach(child => {
+                                    child.classList.remove('active', 'bg-primary', 'border-primary');
+                                    child.classList.add('btn-outline-secondary', 'border-secondary');
+                                    child.style.backgroundColor = '';
+                                });
+                                
+                                // Add active class to clicked
+                                this.classList.remove('btn-outline-secondary', 'border-secondary');
+                                this.classList.add('active');
+                                this.style.backgroundColor = '#a855f7';
+                                this.style.borderColor = '#a855f7';
+                                
+                                selectedTimeInput.value = time;
+                                btnConfirmBooking.disabled = false;
+                            });
+                            
+                            timeSlotsContainer.appendChild(badge);
+                        });
+                    } else {
+                        timeSlotsContainer.innerHTML = `<span class="text-muted small">${data.message || 'Nenhum horário disponível para esta data.'}</span>`;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    timeSlotsContainer.innerHTML = '<span class="text-danger small">Erro ao carregar horários.</span>';
+                });
+        });
+    });
+</script>
 {% endblock %}
