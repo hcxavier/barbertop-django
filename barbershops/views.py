@@ -10,7 +10,9 @@ import calendar
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.db.models import Avg, Count, Q
-from .models import Barbershop
+from .models import Barbershop, Rating
+from django.contrib.auth.decorators import login_required
+from .forms import RatingForm
 
 def home(request):
     # recomendadas - barbearias com as notas acima de 4.5 em relação a media de avaliações
@@ -557,9 +559,6 @@ def schedule_delete(request, operation_id):
     
     return redirect('barbershops:schedule_manage')
 
-from django.contrib.auth.decorators import login_required
-from .forms import RatingForm
-
 @login_required
 def rate_barbershop(request):
     if request.method == 'POST':
@@ -597,5 +596,21 @@ def barbershop_detail(request, slug):
         'services': services,
         'operations': operations,
         'employees': employees,
+        'ratings': barbershop.ratings.all().order_by('-createdAt'),
+        'user_ratings': barbershop.ratings.filter(customer=request.user) if request.user.is_authenticated else []
     }
     return render(request, 'pages/barbershop_detail.html', context)
+
+@login_required
+def delete_rating(request, rating_id):
+    rating = get_object_or_404(Rating, id=rating_id)
+    
+    if rating.customer != request.user:
+        messages.error(request, 'Você não tem permissão para excluir esta avaliação.')
+        return redirect('barbershops:barbershop_detail', slug=rating.barbershop.slug)
+        
+    barbershop_slug = rating.barbershop.slug
+    rating.delete()
+    messages.success(request, 'Avaliação excluída com sucesso!')
+    
+    return redirect('barbershops:barbershop_detail', slug=barbershop_slug)

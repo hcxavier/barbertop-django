@@ -88,6 +88,83 @@
                 {% endfor %}
             </div>
 
+            <hr class="border-secondary my-4">
+
+            <!-- Ratings Section -->
+            <div class="mb-4">
+                <h5 class="fw-bold mb-4">Avaliações</h5>
+
+                <!-- My Ratings (if any) -->
+                {% if user_ratings %}
+                <div class="card bg-transparent border-secondary mb-4">
+                    <div class="card-header border-secondary bg-transparent">
+                        <h6 class="mb-0 text-white"><i class="bi bi-person-circle me-2"></i>Minha Avaliação</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for rating in user_ratings %}
+                        <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom border-secondary">
+                            <div>
+                                <div class="text-warning mb-1">
+                                    {% with ''|center:rating.ratingNumber as range %}
+                                    {% for _ in range %}
+                                    <i class="bi bi-star-fill"></i>
+                                    {% endfor %}
+                                    {% endwith %}
+                                    <span class="text-muted ms-2 small">{{ rating.createdAt|date:"d/m/Y" }}</span>
+                                </div>
+                                {% if rating.ratingDescription %}
+                                <p class="text-light mb-0">{{ rating.ratingDescription }}</p>
+                                {% endif %}
+                            </div>
+                            <form action="{% url 'barbershops:delete_rating' rating.id %}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua avaliação?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Excluir Avaliação">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- All Ratings List -->
+                <div class="ratings-list">
+                    {% for rating in ratings %}
+                        <!-- Skip user's own ratings in the general list to avoid duplication, or keep them? 
+                             Usually better to show all here, but maybe highlight. 
+                             Let's show all, but if it's the user's, we mark it. -->
+                        {% if rating.customer != request.user %}
+                        <div class="d-flex gap-3 mb-4">
+                            <div class="avatar-circle bg-dark border border-secondary text-muted d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; min-width: 40px;">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <h6 class="fw-bold text-white mb-0">{{ rating.customer.first_name|default:rating.customer.username }}</h6>
+                                    <span class="text-muted small">• {{ rating.createdAt|date:"d M, Y" }}</span>
+                                </div>
+                                <div class="text-warning mb-2 small">
+                                    {% with ''|center:rating.ratingNumber as range %}
+                                    {% for _ in range %}
+                                    <i class="bi bi-star-fill"></i>
+                                    {% endfor %}
+                                    {% endwith %}
+                                </div>
+                                {% if rating.ratingDescription %}
+                                <p class="text-muted mb-0 small">{{ rating.ratingDescription }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                        {% if not user_ratings %}
+                        <p class="text-muted">Esta barbearia ainda não possui avaliações.</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
 
         <!-- Right Column: Sidebar Info -->
@@ -107,7 +184,6 @@
                 {% endfor %}
             </div>
 
-            <!-- Contact Card -->
             <div class="info-card">
                 <h6 class="fw-bold mb-3 text-uppercase small text-muted">Contato</h6>
                 
@@ -124,7 +200,6 @@
     </div>
 </div>
 
-<!-- Booking Modal -->
 <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="background-color: #1a1a1a; color: white; border: 1px solid #333;">
