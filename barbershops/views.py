@@ -27,10 +27,19 @@ def home(request):
         )
     ).filter(completed_bookings__gt=5).order_by('-completed_bookings')
 
+    confirmed_bookings = []
+    if request.user.is_authenticated:
+        confirmed_bookings = Booking.objects.filter(
+            customer=request.user,
+            status='CONFIRMADO',
+            schedule__gte=timezone.now()
+        ).order_by('schedule')
+
     context = {
         'barbers_recommended': barbers_recommended,
         'barbers_popular': barbers_popular,
-        'barbers_most_visited': barbers_most_visited
+        'barbers_most_visited': barbers_most_visited,
+        'confirmed_bookings': confirmed_bookings
     }
 
     return render(request, 'pages/home.html', context)

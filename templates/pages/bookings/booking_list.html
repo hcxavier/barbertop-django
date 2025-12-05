@@ -58,7 +58,24 @@
                     <div class="date-time">{{booking.schedule|date:"H:i"}}</div>
                 </div>
             </div>
-            {% endfor %} {% endif %} {% if bookings_finished %}
+            {% endfor %} 
+            {% elif not bookings_finished %}
+            <div class="d-flex flex-column align-items-center justify-content-center py-5">
+                <div class="bg-dark rounded-circle d-flex align-items-center justify-content-center mb-4" 
+                     style="width: 80px; height: 80px; background-color: #1A1B1F !important; border: 1px solid #2f3036;">
+                    <i class="bi bi-calendar-x text-secondary" style="font-size: 2rem;"></i>
+                </div>
+                <h4 class="fw-bold text-white mb-2">Nenhum agendamento</h4>
+                <p class="text-muted mb-4 text-center" style="max-width: 300px;">
+                    Você ainda não tem agendamentos. Que tal encontrar uma barbearia e marcar um horário?
+                </p>
+                <a href="{% url 'home' %}" class="btn btn-primary fw-bold px-4 py-2 border-0 shadow-sm" 
+                   style="background-color: #8156db; border-radius: 8px;">
+                    Encontrar Barbearia
+                </a>
+            </div>
+            {% endif %} 
+            {% if bookings_finished %}
             <span class="subtitle mt-4">Finalizados</span>
             {% for booking in bookings_finished %}
             <div

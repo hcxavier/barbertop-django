@@ -25,30 +25,46 @@
                 />
             </div>
 
+            {% if confirmed_bookings %}
             <div class="mb-4">
                 <h6 class="text-uppercase text-muted small fw-bold mb-3">Agendamentos</h6>
 
-                <div class="booking-card d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="badge-confirmed">Confirmado</span>
-                        <h5 class="fw-bold mb-2">Corte de Cabelo</h5>
-                        <div class="d-flex align-items-center gap-2">
-                            <img
-                                src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=100"
-                                class="barber-avatar-sm"
-                                alt="Avatar"
-                            />
-                            <span class="text-muted small">Vintage Barber</span>
+                <div class="d-flex flex-column gap-3">
+                    {% for booking in confirmed_bookings %}
+                    <a href="{% url 'bookings:booking_list' user.id %}" class="text-decoration-none text-reset">
+                        <div class="booking-card d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge-confirmed">Confirmado</span>
+                                <h5 class="fw-bold mb-2">{{ booking.service.name }}</h5>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if booking.barbershop.imageUrl %}
+                                    <img
+                                        src="{{ booking.barbershop.imageUrl.url }}"
+                                        class="barber-avatar-sm"
+                                        alt="Avatar"
+                                    />
+                                    {% else %}
+                                    <img
+                                        src="https://api.dicebear.com/7.x/initials/svg?seed={{ booking.barbershop.name }}"
+                                        class="barber-avatar-sm"
+                                        alt="Avatar"
+                                    />
+                                    {% endif %}
+                                    <span class="text-muted small">{{ booking.barbershop.name }}</span>
+                                </div>
+                            </div>
+                            <div style="width: 1px; height: 50px; background-color: #333; margin: 0 15px"></div>
+                            <div class="date-box">
+                                <div class="date-month">{{ booking.schedule|date:"F" }}</div>
+                                <div class="date-day">{{ booking.schedule|date:"d" }}</div>
+                                <div class="date-time">{{ booking.schedule|date:"H:i" }}</div>
+                            </div>
                         </div>
-                    </div>
-                    <div style="width: 1px; height: 50px; background-color: #333; margin: 0 15px"></div>
-                    <div class="date-box">
-                        <div class="date-month">Fevereiro</div>
-                        <div class="date-day">06</div>
-                        <div class="date-time">09:45</div>
-                    </div>
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </div>
         <div class="col-lg-6">
             <div class="mb-4">
