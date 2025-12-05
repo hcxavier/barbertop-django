@@ -7,14 +7,16 @@
 <link rel="stylesheet" href="{% static 'barbershops/css/detail.css' %}" />
 {% endblock %} 
 
+{% block body_class %}{% endblock %}
+
 {% block content %}
 <!-- Cover Image -->
 {% if barbershop.imageUrl %}
-<div class="container-fluid px-0">
+<div class="container px-0 mt-4rem">
     <img src="{{ barbershop.imageUrl.url }}" class="barbershop-cover" alt="{{ barbershop.name }}">
 </div>
 {% else %}
-<div class="container-fluid px-0 bg-secondary" style="height: 250px; display: flex; align-items: center; justify-content: center;">
+<div class="container px-0 bg-secondary" style="height: 250px; display: flex; align-items: center; justify-content: center;">
     <i class="bi bi-shop fs-1 text-white-50"></i>
 </div>
 {% endif %}
