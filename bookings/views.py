@@ -29,10 +29,6 @@ def booking_list(request, user_id):
     return render(request, 'pages/bookings/booking_list.html', {'user_id': user_id, 'bookings_confirmed': bookings_confirmed, 'bookings_finished': bookings_finished, 'selected_booking': selected_booking  })
 
 def _ensure_employee_exists(barbershop):
-    """
-    Helper to ensure at least one employee exists.
-    If none, creates one based on the owner.
-    """
     if not barbershop.employees.exists() and barbershop.owner:
         owner_name = barbershop.owner.get_full_name() or barbershop.owner.username or "Profissional Principal"
         return Employee.objects.create(
@@ -53,7 +49,6 @@ def get_available_times(request):
     try:
         barbershop = Barbershop.objects.get(id=barbershop_id)
         
-        # Auto-create owner employee if shop has no employees
         _ensure_employee_exists(barbershop)
         
         service = BarbershopService.objects.get(id=service_id)
@@ -133,7 +128,6 @@ def booking_create(request):
         try:
             barbershop = get_object_or_404(Barbershop, id=barbershop_id)
             
-            # Auto-create owner employee if needed (safety check)
             _ensure_employee_exists(barbershop)
             
             service = get_object_or_404(BarbershopService, id=service_id)
@@ -166,7 +160,6 @@ def booking_create(request):
                         messages.error(request, 'Este horário já foi reservado por outro cliente. Por favor, escolha outro horário.')
                         return redirect('barbershops:barbershop_detail', slug=barbershop.slug)
             else:
-                # Auto-assign: Find first available employee
                 candidates = barbershop.employees.all()
                 for cand in candidates:
                     # Check conflicts for this candidate
@@ -177,15 +170,6 @@ def booking_create(request):
                         schedule__gt=schedule - timedelta(minutes=30) # Approximate check, better to be precise
                     ).exists()
                     
-                    # Precise check
-                    # Any booking that overlaps with [schedule, schedule + service_duration]
-                    # Overlap condition: Not (EndA <= StartB or StartA >= EndB)
-                    # Here B is the new booking. A is existing.
-                    # Existing booking A: [A_start, A_end]
-                    # New booking B: [schedule, schedule + duration]
-                    
-                    # Simplified query:
-                    # Get all bookings for cand around that time
                     cand_bookings = Booking.objects.filter(
                         employee=cand,
                         status__in=['PENDENTE', 'CONFIRMADO'],
@@ -241,8 +225,8 @@ def booking_cancel(request, booking_id):
             messages.error(request, 'Não é possível cancelar agendamentos com menos de 24h de antecedência.')
             return redirect('bookings:booking_list', user_id=request.user.id)
 
-        # Em vez de soft delete, vamos fazer delete real para contar como CRUD Delete
-        booking.delete()
+        booking.status = 'CANCELADO'
+        booking.save()
         messages.success(request, 'Agendamento cancelado/removido com sucesso!')
     
     return redirect('bookings:booking_list', user_id=request.user.id)
