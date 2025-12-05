@@ -27,6 +27,13 @@
     cursor: pointer;
 }
 
+/* Fix for Chrome layout issues */
+.booking-card-item > div:first-child {
+    flex: 1;
+    min-width: 0;
+    padding-right: 10px;
+}
+
 .booking-card-item:hover {
     border-color: #3f3f46;
 }
@@ -103,7 +110,10 @@
     border: 1px solid #333;
     border-radius: 12px;
     overflow: hidden; /* Para o mapa não sair */
-    height: 100%; /* Ocupa altura total se possível */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 /* Mapa e Overlay */
@@ -127,6 +137,12 @@
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+/* Fix for text truncate in flex container on Chrome */
+.map-overlay-card > div {
+    min-width: 0;
+    flex: 1;
 }
 
 .shop-avatar-lg {
