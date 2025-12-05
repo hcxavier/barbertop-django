@@ -5,17 +5,190 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+<style>
+    /* Modern Form Styles */
+    .form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .section-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    /* Day Selector - Modern Pills */
+    .day-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .day-checkbox {
+        display: none;
+    }
+
+    .day-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background-color: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .day-label:hover {
+        border-color: var(--text-muted);
+        background-color: rgba(255, 255, 255, 0.08);
+        color: var(--text-main);
+        transform: translateY(-2px);
+    }
+
+    .day-checkbox:checked + .day-label {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(130, 87, 229, 0.3);
+        transform: translateY(-1px);
+    }
+
+    .day-checkbox:checked + .day-label::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Input Groups */
+    .time-input-group {
+        position: relative;
+        background-color: var(--bg-dark);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .time-input-group:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(130, 87, 229, 0.2);
+    }
+
+    .time-input-label {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .custom-time-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        color: var(--text-main);
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 0;
+        outline: none;
+    }
+    
+    /* Action Buttons */
+    .actions-row {
+        margin-top: 2.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
+    }
+
+    .btn-cancel {
+        color: var(--text-muted);
+        background: transparent;
+        border: 1px solid transparent;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-submit {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(130, 87, 229, 0.25);
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-submit:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(130, 87, 229, 0.35);
+    }
+
+    .header-back-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        background: var(--bg-card);
+        transition: all 0.2s;
+    }
+
+    .header-back-btn:hover {
+        background: var(--bg-dark);
+        color: var(--text-main);
+        border-color: var(--text-muted);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <main class="main-content">
-    <header class="top-bar mb-4">
-        <!-- Breadcrumb ou Título -->
-        <div class="d-flex align-items-center gap-2">
-            <a href="{% url 'barbershops:schedule_manage' %}" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-arrow-left"></i> Voltar
+    <header class="top-bar mb-5 justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{% url 'barbershops:schedule_manage' %}" class="header-back-btn" title="Voltar">
+                <i class="bi bi-arrow-left"></i>
             </a>
-            <h4 class="m-0 fw-bold">{{ title }}</h4>
+            <div>
+                <h4 class="m-0 fw-bold text-white">{{ title }}</h4>
+                <p class="m-0 text-muted small">Configure seus horários de atendimento</p>
+            </div>
         </div>
         
         <div class="dropdown">
@@ -31,13 +204,15 @@
     </header>
 
     <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="custom-card">
+        <div class="col-12 col-lg-8 col-xl-7">
+            <div class="form-card">
                 
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="background-color: #18181b; color: #e1e1e6; border: 1px solid #29292e;">
-                            {{ message }}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center gap-2 mb-4" role="alert" style="background-color: #18181b; color: #e1e1e6; border: 1px solid #29292e;">
+                            {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}
+                            {% if message.tags == 'error' %}<i class="bi bi-exclamation-triangle-fill text-danger"></i>{% endif %}
+                            <div>{{ message }}</div>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
@@ -46,28 +221,44 @@
                 <form method="POST">
                     {% csrf_token %}
                     
-                    <div class="mb-3">
-                        <label for="{{ form.weekDay.id_for_label }}" class="form-label text-muted">Dia da Semana</label>
-                        {{ form.weekDay }}
-                        {% if form.weekDay.errors %}
-                            <div class="text-danger small mt-1">{{ form.weekDay.errors }}</div>
-                        {% endif %}
+                    <div class="mb-5">
+                        <span class="section-title"><i class="bi bi-calendar-week me-2"></i>Dias da Semana</span>
+                        <div class="day-selector">
+                            {% for value, label in days_choices %}
+                                <input type="checkbox" id="day-{{ value }}" name="weekDays" value="{{ value }}" class="day-checkbox"
+                                    {% if value in selected_days %}checked{% endif %}>
+                                <label for="day-{{ value }}" class="day-label" title="{{ label }}">
+                                    {{ label|slice:":3" }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <div class="d-flex align-items-center gap-2 text-muted small">
+                            <i class="bi bi-info-circle"></i>
+                            <span>Selecione um ou mais dias para aplicar este horário.</span>
+                        </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-6 mb-3">
-                            <label for="{{ form.timeInitial.id_for_label }}" class="form-label text-muted">Horário de Início</label>
-                            {{ form.timeInitial }}
-                            {% if form.timeInitial.errors %}
-                                <div class="text-danger small mt-1">{{ form.timeInitial.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="col-6 mb-3">
-                            <label for="{{ form.timeFinal.id_for_label }}" class="form-label text-muted">Horário de Fim</label>
-                            {{ form.timeFinal }}
-                            {% if form.timeFinal.errors %}
-                                <div class="text-danger small mt-1">{{ form.timeFinal.errors }}</div>
-                            {% endif %}
+                    <div class="mb-4">
+                        <span class="section-title"><i class="bi bi-clock me-2"></i>Intervalo de Horário</span>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="time-input-group">
+                                    <label for="{{ form.timeInitial.id_for_label }}" class="time-input-label">Abertura</label>
+                                    {{ form.timeInitial }}
+                                </div>
+                                {% if form.timeInitial.errors %}
+                                    <div class="text-danger small mt-1 ms-1">{{ form.timeInitial.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="time-input-group">
+                                    <label for="{{ form.timeFinal.id_for_label }}" class="time-input-label">Fechamento</label>
+                                    {{ form.timeFinal }}
+                                </div>
+                                {% if form.timeFinal.errors %}
+                                    <div class="text-danger small mt-1 ms-1">{{ form.timeFinal.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
@@ -77,13 +268,27 @@
                         </div>
                     {% endif %}
 
-                    <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="{% url 'barbershops:schedule_manage' %}" class="btn btn-outline-light">Cancelar</a>
-                        <button type="submit" class="btn btn-primary" style="background-color: #8257e5; border: none;">Salvar</button>
+                    <div class="actions-row">
+                        <a href="{% url 'barbershops:schedule_manage' %}" class="btn-cancel">Cancelar</a>
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-check-lg"></i>
+                            Salvar Horário
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </main>
+
+<!-- Script to ensure inputs have the right class -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const timeInputs = document.querySelectorAll('input[type="time"]');
+        timeInputs.forEach(input => {
+            input.classList.add('custom-time-input');
+            input.classList.remove('form-control'); // Remove bootstrap class if auto-added
+        });
+    });
+</script>
 {% endblock %}

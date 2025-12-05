@@ -108,10 +108,7 @@
             <i class="bi bi-people"></i>
             Equipe
         </a>
-        <a href="#" class="nav-link">
-            <i class="bi bi-calendar4"></i>
-            Agenda
-        </a>
+        
         <a href="{% url 'barbershops:schedule_manage' %}" class="nav-link {% if 'schedule' in request.path %}active{% endif %}">
             <i class="bi bi-clock"></i>
             Horários

@@ -409,9 +409,15 @@ def schedule_manage(request):
     for op in operations:
         op.day_display = days_map.get(op.weekDay, 'Dia desconhecido')
 
+    days_choices = [
+        (0, 'Segunda-feira'), (1, 'Terça-feira'), (2, 'Quarta-feira'),
+        (3, 'Quinta-feira'), (4, 'Sexta-feira'), (5, 'Sábado'), (6, 'Domingo')
+    ]
+
     context = {
         'barbershop': barbershop,
         'operations': operations,
+        'days_choices': days_choices,
     }
     return render(request, 'pages/dashboard-schedule.html', context)
 
@@ -419,26 +425,59 @@ def schedule_manage(request):
 def schedule_add(request):
     barbershop = request.user.barbershop_profile
     
+    # Definição dos dias para o template
+    days_choices = [
+        (0, 'Segunda-feira'), (1, 'Terça-feira'), (2, 'Quarta-feira'),
+        (3, 'Quinta-feira'), (4, 'Sexta-feira'), (5, 'Sábado'), (6, 'Domingo')
+    ]
+
     if request.method == 'POST':
-        form = OperationForm(request.POST)
-        if form.is_valid():
-            # Verificar se já existe horário para este dia
-            week_day = form.cleaned_data['weekDay']
-            if Operation.objects.filter(barbershop=barbershop, weekDay=week_day).exists():
-                messages.error(request, 'Já existe um horário configurado para este dia.')
-            else:
-                operation = form.save(commit=False)
-                operation.barbershop = barbershop
-                operation.save()
-                messages.success(request, 'Horário adicionado com sucesso!')
-                return redirect('barbershops:schedule_manage')
+        # Copiar POST para poder modificar se necessário (embora não precise muito aqui se usarmos update_or_create)
+        data = request.POST.copy()
+        week_days = data.getlist('weekDays')
+        
+        # Hack para passar na validação do form se a lista não estiver vazia
+        if week_days:
+            data['weekDay'] = week_days[0]
+        
+        form = OperationForm(data)
+        
+        if not week_days:
+            messages.error(request, 'Selecione pelo menos um dia da semana.')
+        elif form.is_valid():
+            time_initial = form.cleaned_data['timeInitial']
+            time_final = form.cleaned_data['timeFinal']
+            
+            count_created = 0
+            count_updated = 0
+            
+            for day in week_days:
+                day_int = int(day)
+                obj, created = Operation.objects.update_or_create(
+                    barbershop=barbershop,
+                    weekDay=day_int,
+                    defaults={
+                        'timeInitial': time_initial,
+                        'timeFinal': time_final
+                    }
+                )
+                if created:
+                    count_created += 1
+                else:
+                    count_updated += 1
+            
+            msg = f'Horários salvos! {count_created} criado(s), {count_updated} atualizado(s).'
+            messages.success(request, msg)
+            return redirect('barbershops:schedule_manage')
     else:
         form = OperationForm()
     
     context = {
         'barbershop': barbershop,
         'form': form,
-        'title': 'Novo Horário'
+        'title': 'Novo Horário',
+        'days_choices': days_choices,
+        'selected_days': [] # Nenhum selecionado por padrão
     }
     return render(request, 'pages/schedule-form.html', context)
 
@@ -447,25 +486,62 @@ def schedule_edit(request, operation_id):
     barbershop = request.user.barbershop_profile
     operation = get_object_or_404(Operation, id=operation_id, barbershop=barbershop)
     
+    days_choices = [
+        (0, 'Segunda-feira'), (1, 'Terça-feira'), (2, 'Quarta-feira'),
+        (3, 'Quinta-feira'), (4, 'Sexta-feira'), (5, 'Sábado'), (6, 'Domingo')
+    ]
+
     if request.method == 'POST':
-        form = OperationForm(request.POST, instance=operation)
-        if form.is_valid():
-            # Verificar colisão de dias se o usuário mudar o dia
-            new_week_day = form.cleaned_data.get('weekDay')
-            # Se mudou o dia E já existe outro registro com esse novo dia
-            if str(new_week_day) != str(operation.weekDay) and Operation.objects.filter(barbershop=barbershop, weekDay=new_week_day).exists():
-                 messages.error(request, 'Já existe um horário configurado para este dia.')
-            else:
-                form.save()
-                messages.success(request, 'Horário atualizado com sucesso!')
-                return redirect('barbershops:schedule_manage')
+        data = request.POST.copy()
+        week_days = data.getlist('weekDays')
+        
+        if week_days:
+            data['weekDay'] = week_days[0]
+            
+        form = OperationForm(data, instance=operation)
+        
+        if not week_days:
+            messages.error(request, 'Selecione pelo menos um dia da semana.')
+        elif form.is_valid():
+            time_initial = form.cleaned_data['timeInitial']
+            time_final = form.cleaned_data['timeFinal']
+            
+            # Lista de dias como inteiros
+            selected_days_ints = [int(d) for d in week_days]
+            
+            # 1. Se o dia original NÃO está na nova lista, deletar a operação original?
+            #    Ou apenas atualizamos a operação original para ser um dos novos dias?
+            #    Lógica: O usuário está editando. Se ele desmarca o dia atual e marca outros,
+            #    ele quer que essa configuração se aplique aos outros e não mais a este.
+            
+            original_day = operation.weekDay
+            
+            # Salvar/Atualizar para todos os dias selecionados
+            for day_int in selected_days_ints:
+                Operation.objects.update_or_create(
+                    barbershop=barbershop,
+                    weekDay=day_int,
+                    defaults={
+                        'timeInitial': time_initial,
+                        'timeFinal': time_final
+                    }
+                )
+            
+            # Se o dia original não está na lista de selecionados, removemos ele
+            if original_day not in selected_days_ints:
+                operation.delete()
+                
+            messages.success(request, 'Horários atualizados com sucesso!')
+            return redirect('barbershops:schedule_manage')
     else:
         form = OperationForm(instance=operation)
     
     context = {
         'barbershop': barbershop,
         'form': form,
-        'title': 'Editar Horário'
+        'title': 'Editar Horário',
+        'days_choices': days_choices,
+        'selected_days': [operation.weekDay] # Pré-selecionar o dia atual
     }
     return render(request, 'pages/schedule-form.html', context)
 
