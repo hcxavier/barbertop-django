@@ -291,6 +291,5 @@ def booking_complete(request, booking_id):
     if request.method == 'POST':
         booking.status = 'CONCLUIDO'
         booking.save()
-        messages.success(request, 'Agendamento marcado como concluído!')
     
     return redirect('dashboard')

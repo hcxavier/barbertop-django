@@ -1,18 +1,16 @@
 {% extends "base.html" %} 
 {% load static %} 
 
-{% block title %}FSW Barber - Cadastro Completo{% endblock %} 
+{% block title %}BarberTop - Cadastro Completo{% endblock %} 
 
-{% block navbar %}{% endblock %}
-{% block footer %}{% endblock %}
-{% block body_class %}{% endblock %}
+{% block navbar %}{% endblock %} 
+
+{% block footer %}{% endblock %} 
+{% block body_class %}{% endblock %} 
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'users/css/form-barber.css' %}" />
-{% endblock %}
-
-
-{% block content %}
+<link rel="stylesheet" href="{% static 'users/css/form-barber.css' %}" />
+{% endblock %} {% block content %}
 <body>
     <div class="container py-5">
         <div class="row justify-content-center">
@@ -20,7 +18,7 @@
                 <div class="text-center mb-5">
                     <div class="d-inline-flex align-items-center gap-2 fs-4 fw-bold">
                         <i class="bi bi-scissors" style="color: #a855f7"></i>
-                        <span>FSW BARBER</span>
+                        <span>BarberTop</span>
                     </div>
                     <p class="text-muted mt-2">Preencha todos os dados abaixo para cadastrar seu negócio</p>
                 </div>
@@ -59,7 +57,12 @@
 
                     <div class="mb-3">
                         <label class="form-label">Telefone / WhatsApp Comercial</label>
-                        <input type="tel" id="inputTelefone" class="form-control form-control-dark" placeholder="(00) 00000-0000" />
+                        <input
+                            type="tel"
+                            id="inputTelefone"
+                            class="form-control form-control-dark"
+                            placeholder="(00) 00000-0000"
+                        />
                     </div>
 
                     <div class="mb-3">
@@ -219,7 +222,7 @@
                             placeholder="seu@email.com"
                         />
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Senha</label>
@@ -242,13 +245,24 @@
                     </div>
 
                     <!-- Password Feedback -->
-                    <div class="bg-dark border border-secondary rounded mb-4 p-3" style="background-color: #1a1b1e; border-color: #333 !important;">
+                    <div
+                        class="bg-dark border border-secondary rounded mb-4 p-3"
+                        style="background-color: #1a1b1e; border-color: #333 !important"
+                    >
                         <small class="text-light fw-bold mb-2 d-block">Sua senha deve ter:</small>
                         <ul class="list-unstyled mb-0 small" id="password-requirements">
-                            <li id="req-length" class="text-muted"><i class="bi bi-circle me-1"></i> Mínimo de 8 caracteres</li>
-                            <li id="req-number" class="text-muted"><i class="bi bi-circle me-1"></i> Pelo menos um número</li>
-                            <li id="req-upper" class="text-muted"><i class="bi bi-circle me-1"></i> Pelo menos uma letra maiúscula</li>
-                            <li id="req-match" class="text-muted"><i class="bi bi-circle me-1"></i> As senhas conferem</li>
+                            <li id="req-length" class="text-muted">
+                                <i class="bi bi-circle me-1"></i> Mínimo de 8 caracteres
+                            </li>
+                            <li id="req-number" class="text-muted">
+                                <i class="bi bi-circle me-1"></i> Pelo menos um número
+                            </li>
+                            <li id="req-upper" class="text-muted">
+                                <i class="bi bi-circle me-1"></i> Pelo menos uma letra maiúscula
+                            </li>
+                            <li id="req-match" class="text-muted">
+                                <i class="bi bi-circle me-1"></i> As senhas conferem
+                            </li>
                         </ul>
                     </div>
 
@@ -326,7 +340,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Foto de Perfil</label>
-                            <input type="file" class="form-control form-control-dark" id="fotoFuncionario" accept="image/*" />
+                            <input
+                                type="file"
+                                class="form-control form-control-dark"
+                                id="fotoFuncionario"
+                                accept="image/*"
+                            />
                         </div>
                     </form>
                 </div>

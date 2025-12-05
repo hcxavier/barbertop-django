@@ -32,7 +32,7 @@ def home(request):
 
     # Todas as Barbearias (Paginado)
     all_barbershops_list = Barbershop.objects.all().order_by('name')
-    paginator = Paginator(all_barbershops_list, 10) # 10 items per page
+    paginator = Paginator(all_barbershops_list, 8) # 8 items per page
     page_number = request.GET.get('page')
     barbers_all = paginator.get_page(page_number)
 

@@ -1,28 +1,21 @@
-{% extends "base.html" %} 
-{% load static %} 
-
-{% block title %}FSW Barber - Agendamentos{% endblock %} 
+{% extends "base.html" %} {% load static %} {% block title %}BarberTop - Agendamentos{% endblock %} 
 
 {% block extra_head%}
 <link rel="stylesheet" href="{% static 'bookings/bookings.css' %}" />
-{% endblock %} 
-
-{% block content %}
+{% endblock %} {% block content %}
 <div class="container pb-4">
     <h1 class="section-title">Agendamentos</h1>
 
-    {% if messages %}
-        {% for message in messages %}
-        <div
-            class="alert alert-success-custom alert-dismissible fade show d-flex align-items-center gap-2 mb-4"
-            role="alert"
-        >
-            <i class="bi bi-check-circle-fill"></i>
-            <div>{{ message }}</div>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    {% endif %}
+    {% if messages %} {% for message in messages %}
+    <div
+        class="alert alert-success-custom alert-dismissible fade show d-flex align-items-center gap-2 mb-4"
+        role="alert"
+    >
+        <i class="bi bi-check-circle-fill"></i>
+        <div>{{ message }}</div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %} {% endif %}
 
     <div class="row g-4">
         <div class="col-lg-6">
@@ -71,24 +64,27 @@
                     <div class="date-time">{{booking.schedule|date:"H:i"}}</div>
                 </div>
             </div>
-            {% endfor %} 
-            {% elif not bookings_finished %}
+            {% endfor %} {% elif not bookings_finished %}
             <div class="d-flex flex-column align-items-center justify-content-center py-5">
-                <div class="bg-dark rounded-circle d-flex align-items-center justify-content-center mb-4" 
-                     style="width: 80px; height: 80px; background-color: #1A1B1F !important; border: 1px solid #2f3036;">
-                    <i class="bi bi-calendar-x text-secondary" style="font-size: 2rem;"></i>
+                <div
+                    class="bg-dark rounded-circle d-flex align-items-center justify-content-center mb-4"
+                    style="width: 80px; height: 80px; background-color: #1a1b1f !important; border: 1px solid #2f3036"
+                >
+                    <i class="bi bi-calendar-x text-secondary" style="font-size: 2rem"></i>
                 </div>
                 <h4 class="fw-bold text-white mb-2">Nenhum agendamento</h4>
-                <p class="text-muted mb-4 text-center" style="max-width: 300px;">
+                <p class="text-muted mb-4 text-center" style="max-width: 300px">
                     Você ainda não tem agendamentos. Que tal encontrar uma barbearia e marcar um horário?
                 </p>
-                <a href="{% url 'home' %}" class="btn btn-primary fw-bold px-4 py-2 border-0 shadow-sm" 
-                   style="background-color: #8156db; border-radius: 8px;">
+                <a
+                    href="{% url 'home' %}"
+                    class="btn btn-primary fw-bold px-4 py-2 border-0 shadow-sm"
+                    style="background-color: #8156db; border-radius: 8px"
+                >
                     Encontrar Barbearia
                 </a>
             </div>
-            {% endif %} 
-            {% if bookings_finished %}
+            {% endif %} {% if bookings_finished %}
             <span class="subtitle mt-4">Finalizados</span>
             {% for booking in bookings_finished %}
             <div

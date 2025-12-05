@@ -1,14 +1,6 @@
-{% extends "base.html" %} 
-{% load static %} 
-
-{% block title %}Meu Perfil - FSW Barber{% endblock %} 
-
-{% block extra_head%}
+{% extends "base.html" %} {% load static %} {% block title %}Meu Perfil - BarberTop{% endblock %} {% block extra_head%}
 <link rel="stylesheet" href="{% static 'users/css/profile.css' %}" />
-{% endblock %}
-
-{% block body_class %}{% endblock %}
-{% block content %}
+{% endblock %} {% block body_class %}{% endblock %} {% block content %}
 <div class="profile-container">
     <div class="mw-600 px-3">
         {% if messages %} {% for message in messages %}
