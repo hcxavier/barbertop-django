@@ -133,3 +133,66 @@ function removerFuncionario(index) {
     employeesList.splice(index, 1);
     renderEmployees();
 }
+
+// --- Password Validation Logic ---
+document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById("inputSenha");
+    const confirmInput = document.getElementById("inputConfirmSenha");
+
+    const matchReq = document.getElementById("req-match");
+    const matchIcon = matchReq.querySelector("i");
+
+    const requirements = {
+        length: { regex: /.{8,}/, element: document.getElementById("req-length") },
+        number: { regex: /\d/, element: document.getElementById("req-number") },
+        upper: { regex: /[A-Z]/, element: document.getElementById("req-upper") },
+    };
+
+    function validateStrength() {
+        const val = passwordInput.value;
+        for (const key in requirements) {
+            const req = requirements[key];
+            const icon = req.element.querySelector("i");
+
+            if (req.regex.test(val)) {
+                req.element.classList.remove("text-muted", "text-danger");
+                req.element.classList.add("text-success");
+                icon.classList.remove("bi-circle", "bi-x-circle");
+                icon.classList.add("bi-check-circle-fill");
+            } else {
+                req.element.classList.remove("text-success");
+                req.element.classList.add(val.length > 0 ? "text-danger" : "text-muted");
+                icon.classList.remove("bi-check-circle-fill", "bi-circle");
+                icon.classList.add(val.length > 0 ? "bi-x-circle" : "bi-circle");
+            }
+        }
+    }
+
+    function validateMatch() {
+        const val1 = passwordInput.value;
+        const val2 = confirmInput.value;
+
+        if (val2.length === 0) {
+            matchReq.className = "text-muted mt-2 pt-2 border-top border-secondary";
+            matchIcon.className = "bi bi-circle me-1";
+            return;
+        }
+
+        if (val1 === val2) {
+            matchReq.className = "text-success mt-2 pt-2 border-top border-secondary";
+            matchIcon.className = "bi bi-check-circle-fill me-1";
+        } else {
+            matchReq.className = "text-danger mt-2 pt-2 border-top border-secondary";
+            matchIcon.className = "bi bi-x-circle me-1";
+        }
+    }
+
+    if (passwordInput && confirmInput) {
+        passwordInput.addEventListener("input", function () {
+            validateStrength();
+            validateMatch();
+        });
+
+        confirmInput.addEventListener("input", validateMatch);
+    }
+});

@@ -241,6 +241,17 @@
                         </div>
                     </div>
 
+                    <!-- Password Feedback -->
+                    <div class="bg-dark border border-secondary rounded mb-4 p-3" style="background-color: #1a1b1e; border-color: #333 !important;">
+                        <small class="text-light fw-bold mb-2 d-block">Sua senha deve ter:</small>
+                        <ul class="list-unstyled mb-0 small" id="password-requirements">
+                            <li id="req-length" class="text-muted"><i class="bi bi-circle me-1"></i> Mínimo de 8 caracteres</li>
+                            <li id="req-number" class="text-muted"><i class="bi bi-circle me-1"></i> Pelo menos um número</li>
+                            <li id="req-upper" class="text-muted"><i class="bi bi-circle me-1"></i> Pelo menos uma letra maiúscula</li>
+                            <li id="req-match" class="text-muted"><i class="bi bi-circle me-1"></i> As senhas conferem</li>
+                        </ul>
+                    </div>
+
                     <button
                         class="btn btn-purple w-100 py-3 fs-6"
                         id="btnFinalizarCadastro"
