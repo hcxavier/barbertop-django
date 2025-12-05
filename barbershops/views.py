@@ -13,6 +13,7 @@ from django.db.models import Avg, Count, Q
 from .models import Barbershop, Rating
 from django.contrib.auth.decorators import login_required
 from .forms import RatingForm
+from django.core.paginator import Paginator
 
 def home(request):
     # recomendadas - barbearias com as notas acima de 4.5 em relação a media de avaliações
@@ -29,6 +30,12 @@ def home(request):
         )
     ).filter(completed_bookings__gt=5).order_by('-completed_bookings')
 
+    # Todas as Barbearias (Paginado)
+    all_barbershops_list = Barbershop.objects.all().order_by('name')
+    paginator = Paginator(all_barbershops_list, 10) # 10 items per page
+    page_number = request.GET.get('page')
+    barbers_all = paginator.get_page(page_number)
+
     confirmed_bookings = []
     if request.user.is_authenticated:
         confirmed_bookings = Booking.objects.filter(
@@ -41,6 +48,7 @@ def home(request):
         'barbers_recommended': barbers_recommended,
         'barbers_popular': barbers_popular,
         'barbers_most_visited': barbers_most_visited,
+        'barbers_all': barbers_all,
         'confirmed_bookings': confirmed_bookings
     }
 

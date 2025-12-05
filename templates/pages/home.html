@@ -188,5 +188,98 @@
             {% endfor %}
         </div>
     </div>
+    <div class="mb-5" id="all-barbershops">
+        <h5 class="fw-bold mb-3">Todas as Barbearias</h5>
+        <div class="row g-4">
+            {% for barber in barbers_all %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card card-barber h-100">
+                    {% if barber.imageUrl %}
+                    <div class="position-relative">
+                        <img
+                            src="{{ barber.imageUrl.url }}"
+                            class="card-img-top"
+                            alt="Barber"
+                            style="height: 160px; object-fit: cover;"
+                        />
+                        {% if barber.rating > 0 %}
+                        <div class="rating-badge"><i class="bi bi-star-fill"></i> {{ barber.rating }}</div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="position-relative">
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 160px;">
+                            <i class="bi bi-shop fs-1 text-white-50"></i>
+                            {% if barber.rating > 0 %}
+                            <div class="rating-badge"><i class="bi bi-star-fill"></i> {{ barber.rating }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="barber-name text-truncate">{{ barber.name }}</h5>
+                        <p class="barber-address text-truncate mb-3">{{ barber.address }}</p>
+                        <div class="mt-auto">
+                            <a href="{% url 'barbershops:barbershop_detail' barber.slug %}" class="btn btn-reservar w-100">Reservar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Nenhuma barbearia encontrada.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if barbers_all.paginator.num_pages > 1 %}
+        <div class="mt-4 d-flex justify-content-center">
+            <nav aria-label="Navegação de páginas">
+                <ul class="pagination">
+                    {% if barbers_all.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link bg-dark text-white border-secondary" href="?page={{ barbers_all.previous_page_number }}#all-barbershops" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link bg-dark text-muted border-secondary" href="#" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in barbers_all.paginator.page_range %}
+                        {% if barbers_all.number == num %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link bg-primary border-primary">{{ num }}</span>
+                        </li>
+                        {% elif num > barbers_all.number|add:'-3' and num < barbers_all.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link bg-dark text-white border-secondary" href="?page={{ num }}#all-barbershops">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if barbers_all.has_next %}
+                    <li class="page-item">
+                        <a class="page-link bg-dark text-white border-secondary" href="?page={{ barbers_all.next_page_number }}#all-barbershops" aria-label="Próximo">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link bg-dark text-muted border-secondary" href="#" aria-label="Próximo">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
