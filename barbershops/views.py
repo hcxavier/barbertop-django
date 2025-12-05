@@ -32,10 +32,10 @@ def home(request):
         confirmed_bookings = Booking.objects.filter(
             customer=request.user,
             status='CONFIRMADO',
-            schedule__gte=timezone.now()
         ).order_by('schedule')
 
     context = {
+        'date_now': timezone.now(),
         'barbers_recommended': barbers_recommended,
         'barbers_popular': barbers_popular,
         'barbers_most_visited': barbers_most_visited,

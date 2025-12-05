@@ -6,7 +6,7 @@
         <div class="col-lg-6">
             <div class="mb-4">
                 <h4 class="text-white mb-1">Olá, <span class="fw-bold">{% if user.is_authenticated %}{{ user.username }}{% else %}Visitante{% endif %}!</span></h4>
-                <p class="text-muted small">Sexta, 2 de Fevereiro</p>
+                <p class="text-muted small">{{ date_now|date:"l, j \d\e F" }}</p>
             </div>
 
             <div class="mb-4">
@@ -15,7 +15,7 @@
                     <button class="btn btn-search"><i class="bi bi-search"></i></button>
                 </form>
             </div>
-
+            
             <div class="mb-4 d-lg-none">
                 <img
                     src="{% static 'home/images/banner-home.png' %}"
