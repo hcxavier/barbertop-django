@@ -11,6 +11,19 @@
 <div class="container pb-4">
     <h1 class="section-title">Agendamentos</h1>
 
+    {% if messages %}
+        {% for message in messages %}
+        <div
+            class="alert alert-success-custom alert-dismissible fade show d-flex align-items-center gap-2 mb-4"
+            role="alert"
+        >
+            <i class="bi bi-check-circle-fill"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
     <div class="row g-4">
         <div class="col-lg-6">
             {% if bookings_confirmed %}
