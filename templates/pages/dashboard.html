@@ -168,6 +168,17 @@
                             <span class="time">{{ booking.schedule|date:"H:i" }}</span>
                             
                             {% if booking.status == 'CONFIRMADO' %}
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm btn-outline-success ms-3 me-3 d-inline-flex align-items-center gap-1" 
+                                    style="font-size: 0.75rem; font-weight: 600; border-radius: 8px;"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#completeBookingModal" 
+                                    data-action-url="{% url 'bookings:booking_complete' booking.id %}"
+                                >
+                                    <i class="bi bi-check-circle-fill"></i> Marcar como Concluído
+                                </button>
+
                                 <span class="status status-confirmed">{{ booking.get_status_display }}</span>
                             {% elif booking.status == 'PENDENTE' %}
                                 <span class="status status-pending">{{ booking.get_status_display }}</span>
@@ -226,4 +237,43 @@
         </div>
     </div>
 </main>
+
+<!-- Modal Concluir Agendamento -->
+<div class="modal fade" id="completeBookingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #18181b; border: 1px solid #29292e; color: #e1e1e6;">
+            <div class="modal-header border-secondary" style="border-color: #29292e !important;">
+                <h5 class="modal-title fw-bold text-success">
+                    <i class="bi bi-check-circle-fill me-2"></i>Concluir Atendimento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-1 fs-5">Confirmar conclusão do serviço?</p>
+                <p class="text-muted small mb-0">Isso registrará o agendamento como realizado e atualizará suas métricas.</p>
+            </div>
+            <div class="modal-footer border-secondary" style="border-color: #29292e !important;">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                <form id="completeBookingForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success fw-bold text-white">
+                        <i class="bi bi-check-lg me-1"></i> Confirmar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var completeBookingModal = document.getElementById('completeBookingModal');
+        completeBookingModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var actionUrl = button.getAttribute('data-action-url');
+            var form = document.getElementById('completeBookingForm');
+            form.action = actionUrl;
+        });
+    });
+</script>
 {% endblock %}

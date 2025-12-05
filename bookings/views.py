@@ -227,6 +227,26 @@ def booking_cancel(request, booking_id):
 
         booking.status = 'CANCELADO'
         booking.save()
-        messages.success(request, 'Agendamento cancelado/removido com sucesso!')
+        messages.success(request, 'Agendamento cancelado com sucesso!')
     
     return redirect('bookings:booking_list', user_id=request.user.id)
+
+@login_required
+def booking_complete(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+    
+    # Check if user is the owner of the barbershop
+    if not request.user.is_authenticated or not hasattr(request.user, 'barbershop_profile'):
+        messages.error(request, 'Permissão negada.')
+        return redirect('dashboard')
+        
+    if booking.service.barbershop != request.user.barbershop_profile:
+        messages.error(request, 'Você não tem permissão para gerenciar este agendamento.')
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        booking.status = 'CONCLUIDO'
+        booking.save()
+        messages.success(request, 'Agendamento marcado como concluído!')
+    
+    return redirect('dashboard')
